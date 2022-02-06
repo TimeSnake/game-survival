@@ -1,0 +1,14 @@
+main: de.timesnake.game.survival.main.GameSurvival
+version: 1.0
+name: game-survival
+author: Mn
+depend: [ basic-bukkit ]
+api-version: 1.13
+
+commands:
+  private:
+    aliases: [ pv ]
+  back:
+  survivalspawn:
+  spawnsurvival:
+  sspawn:
