@@ -11,8 +11,9 @@ import de.timesnake.game.survival.hep.SurvivalHEP;
 import de.timesnake.game.survival.main.GameSurvival;
 import de.timesnake.game.survival.player.SurvivalUser;
 import de.timesnake.game.survival.server.SurvivalServer;
-import de.timesnake.library.basic.util.cmd.Arguments;
-import de.timesnake.library.basic.util.cmd.ExCommand;
+import de.timesnake.library.extension.util.chat.Chat;
+import de.timesnake.library.extension.util.cmd.Arguments;
+import de.timesnake.library.extension.util.cmd.ExCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -132,7 +133,7 @@ public class PrivateCmd implements CommandListener, Listener {
                         user.resetSelectedBlock();
                         sender.sendPluginMessage(ChatColor.PERSONAL + "Removed member " + ChatColor.VALUE + args.get(2).toDbUser().getName());
                     } else {
-                        sender.sendPluginMessage(ChatColor.WARNING + "Member " + ChatColor.VALUE + args.get(2).toDbUser().getName() + ChatColor.WARNING + " is not a member " + Server.getChat().getMessageCode("H", 1904, Plugin.PRIVATE_BLOCKS));
+                        sender.sendPluginMessage(ChatColor.WARNING + "Member " + ChatColor.VALUE + args.get(2).toDbUser().getName() + ChatColor.WARNING + " is not a member " + Chat.getMessageCode("H", 1904, Plugin.PRIVATE_BLOCKS));
                     }
                 } else {
                     sender.sendMessageTooFewArguments();
