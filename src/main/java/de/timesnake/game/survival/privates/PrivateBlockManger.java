@@ -8,6 +8,7 @@ import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.hep.SurvivalHEP;
 import de.timesnake.game.survival.player.SurvivalUser;
 import de.timesnake.game.survival.server.SurvivalServer;
+import de.timesnake.library.extension.util.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.*;
@@ -112,7 +113,7 @@ public class PrivateBlockManger implements Listener {
             this.blocks.remove(block.getId());
             user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.PERSONAL + "Selected block is now free");
         } else {
-            user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.WARNING + "Selected block is not private " + Server.getChat().getMessageCode("E", 2000, Plugin.PRIVATE_BLOCKS));
+            user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.WARNING + "Selected block is not private " + Chat.getMessageCode("E", 2000, Plugin.PRIVATE_BLOCKS));
             user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.PERSONAL + "Please contact a supporter");
         }
     }
@@ -133,7 +134,7 @@ public class PrivateBlockManger implements Listener {
                             if (!user.getUniqueId().equals(nearPrivateBlock.getOwner()) || !user.hasPermission("survival.privateblocks.nearby"))
                                 if (!user.hasPermission("survival.privateblocks.nearby.other")) {
                                     e.setCancelled(true);
-                                    user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.WARNING + "You can not place a chest nearby a foreign chest " + Server.getChat().getMessageCode("H", 1907, Plugin.PRIVATE_BLOCKS));
+                                    user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.WARNING + "You can not place a chest nearby a foreign chest " + Chat.getMessageCode("H", 1907, Plugin.PRIVATE_BLOCKS));
                                     return;
                                 }
                         } else {
