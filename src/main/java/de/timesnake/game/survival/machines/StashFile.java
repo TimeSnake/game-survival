@@ -23,8 +23,8 @@ public class StashFile extends ExFile {
     }
 
     public void addStash(Integer id, Block block, UUID owner, List<UUID> members, List<StashItem> items) {
-        super.setBlock(id + "." + BLOCK, block);
-        super.set(id + "." + OWNER, owner.toString());
+        super.setBlock(id + "." + BLOCK, block).save();
+        super.set(id + "." + OWNER, owner.toString()).save();
 
         super.setUuidList(id + "." + MEMBERS, members);
 
@@ -32,6 +32,7 @@ public class StashFile extends ExFile {
         for (StashItem item : items) {
             super.set(id + "." + ITEMS + "." + i, item);
         }
+        super.save();
     }
 
     public void removeStash(Integer id) {
