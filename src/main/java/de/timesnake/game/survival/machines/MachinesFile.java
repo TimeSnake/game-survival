@@ -62,8 +62,8 @@ public class MachinesFile extends ExFile {
 
     public void addMachine(Machine machine) {
         Integer id = machine.getId();
-        super.set(MACHINES_PATH + "." + id, machine.getLocation().getBlock());
-        super.set(MACHINES_PATH + "." + id + "." + "type", machine.getType().name());
+        super.set(MACHINES_PATH + "." + id, machine.getLocation().getBlock()).save();
+        super.set(MACHINES_PATH + "." + id + "." + "type", machine.getType().name()).save();
         Server.printText(Plugin.MACHINES, "Saved machine " + id + " to file");
     }
 

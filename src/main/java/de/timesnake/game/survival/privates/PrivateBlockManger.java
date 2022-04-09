@@ -47,6 +47,7 @@ public class PrivateBlockManger implements Listener {
         for (PrivateBlock block : this.blocks.values()) {
             this.file.addPrivateBlock(block);
         }
+        this.file.save();
     }
 
     public Map<Integer, PrivateBlock> getBlocksWithId() {
