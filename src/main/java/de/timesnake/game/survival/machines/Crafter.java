@@ -9,6 +9,7 @@ public class Crafter {
 
     public static final String NAME = "§rPortable Crafting Table";
 
-    public static final ExItemStack ITEM = new ExItemStack(Material.CRAFTING_TABLE, 1, NAME, List.of("§7Click to open"));
+    public static final ExItemStack ITEM = new ExItemStack(Material.CRAFTING_TABLE, 1, NAME, List.of("§7Click to " +
+            "open"));
 
 }

@@ -42,7 +42,8 @@ public class GameSurvival extends JavaPlugin {
         //Server.getCommandManager().addCommand(this, "private", List.of("pv"), new PrivateCmd(),
         //		Plugin.PRIVATE_BLOCKS);
         Server.getCommandManager().addCommand(this, "back", new DeathCmd(), Plugin.SURVIVAL);
-        Server.getCommandManager().addCommand(this, "survivalspawn", List.of("spawnsurvival", "sspawn"), new SurvivalSpawnCmd(), Plugin.SURVIVAL);
+        Server.getCommandManager().addCommand(this, "survivalspawn", List.of("spawnsurvival", "sspawn"),
+                new SurvivalSpawnCmd(), Plugin.SURVIVAL);
 
         Database.getServers().<DbGameServer>getServer(Type.Server.GAME, Bukkit.getPort()).setTask("survival");
 

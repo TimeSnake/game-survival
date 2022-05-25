@@ -12,7 +12,8 @@ public class Miner extends Machine {
 
     public static final String NAME = "§rMiner";
 
-    public static final ExItemStack ITEM = new ExItemStack(Material.DROPPER, 1, NAME, List.of("Miner", "§7Generates diverse stone blocks"));
+    public static final ExItemStack ITEM = new ExItemStack(Material.DROPPER, 1, NAME, List.of("Miner", "§7Generates " +
+            "diverse stone blocks"));
 
     public static final ExItemStack COBBLESTONE = new ExItemStack(Material.COBBLESTONE, 7);
     public static final ExItemStack ANDESITE = new ExItemStack(Material.ANDESITE, 1);

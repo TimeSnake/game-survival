@@ -6,7 +6,9 @@ import org.bukkit.event.Listener;
 public abstract class Machine implements Listener {
 
     public enum Type {
-        HARVESTER, MINER, STASH;
+        HARVESTER,
+        MINER,
+        STASH;
     }
 
     protected final Integer id;

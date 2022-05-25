@@ -172,12 +172,14 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
                         Harvester harv = new Harvester(this.getNewId(), loc);
                         this.harvesterLocations.put(loc, harv);
                         this.usedIds.add(harv.getId());
-                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL, ChatColor.PERSONAL + " Harvester placed");
+                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL, ChatColor.PERSONAL + " " +
+                                "Harvester placed");
                     } else if (tag.equals(String.valueOf(Miner.ITEM.getId()))) {
                         Miner miner = new Miner(this.getNewId(), loc);
                         this.minerLocations.put(loc, miner);
                         this.usedIds.add(miner.getId());
-                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL, ChatColor.PERSONAL + " Miner placed");
+                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL, ChatColor.PERSONAL + " Miner" +
+                                " placed");
                     }
                 }
             }

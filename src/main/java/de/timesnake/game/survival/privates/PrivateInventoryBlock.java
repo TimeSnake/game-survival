@@ -12,7 +12,8 @@ public class PrivateInventoryBlock extends PrivateBlock {
 
     private Inventory inventory;
 
-    public PrivateInventoryBlock(Integer id, Block block, UUID owner, String password, boolean isPublic, List<UUID> members) {
+    public PrivateInventoryBlock(Integer id, Block block, UUID owner, String password, boolean isPublic,
+                                 List<UUID> members) {
         super(id, block, owner, password, isPublic, members);
         if (block.getState() instanceof InventoryHolder) {
             this.inventory = ((InventoryHolder) block.getState()).getInventory();

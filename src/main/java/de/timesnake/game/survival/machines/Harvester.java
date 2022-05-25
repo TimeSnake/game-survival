@@ -20,10 +20,12 @@ public class Harvester extends Machine implements Listener {
 
     public static final String NAME = "§rHarvester";
 
-    public static final ExItemStack ITEM = new ExItemStack(Material.DROPPER, 1, NAME, List.of("§7Harvester", "§7Harvests trees automatic"));
+    public static final ExItemStack ITEM = new ExItemStack(Material.DROPPER, 1, NAME, List.of("§7Harvester",
+            "§7Harvests trees automatic"));
     public static final Integer RADIUS = 5;
 
-    private static final ArrayList<Material> woodTypes = new ArrayList<>(List.of(Material.ACACIA_LOG, Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG, Material.JUNGLE_LOG, Material.DARK_OAK_LOG));
+    private static final ArrayList<Material> woodTypes = new ArrayList<>(List.of(Material.ACACIA_LOG,
+            Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG, Material.JUNGLE_LOG, Material.DARK_OAK_LOG));
 
     private BukkitTask task;
 
