@@ -23,7 +23,8 @@ public class RewardHandler implements Listener {
             }
 
             User user = Server.getUser(e.getPlayer());
-            Server.broadcastMessage(Plugin.REWARDS, ChatColor.PUBLIC + user.getChatName() + " gained the reward: " + ChatColor.VALUE + reward.getName());
+            Server.broadcastMessage(Plugin.REWARDS,
+                    ChatColor.PUBLIC + user.getChatName() + " gained the reward: " + ChatColor.VALUE + reward.getName());
             user.addItem(reward.getPrizes());
         }
     }

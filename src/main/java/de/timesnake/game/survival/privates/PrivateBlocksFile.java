@@ -35,9 +35,13 @@ public class PrivateBlocksFile extends ExFile {
             }
 
             if (SurvivalServer.getPrivateBlockManger().hasInventory(loc.getBlock())) {
-                return new PrivateInventoryBlock(id, loc.getBlock(), super.getUUID(path + "." + OWNER), super.getString(path + "." + PASSWORD), super.getBoolean(path + "+" + IS_PUBLIC), super.getUUIDList(path + "." + MEMBERS));
+                return new PrivateInventoryBlock(id, loc.getBlock(), super.getUUID(path + "." + OWNER),
+                        super.getString(path + "." + PASSWORD), super.getBoolean(path + "+" + IS_PUBLIC),
+                        super.getUUIDList(path + "." + MEMBERS));
             } else {
-                return new PrivateBlock(id, loc.getBlock(), super.getUUID(path + "." + OWNER), super.getString(path + "." + PASSWORD), super.getBoolean(path + "+" + IS_PUBLIC), super.getUUIDList(path + "." + MEMBERS));
+                return new PrivateBlock(id, loc.getBlock(), super.getUUID(path + "." + OWNER),
+                        super.getString(path + "." + PASSWORD), super.getBoolean(path + "+" + IS_PUBLIC),
+                        super.getUUIDList(path + "." + MEMBERS));
             }
         }
         return null;

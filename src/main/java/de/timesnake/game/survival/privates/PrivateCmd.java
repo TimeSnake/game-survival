@@ -30,6 +30,15 @@ public class PrivateCmd implements CommandListener, Listener {
     private static HashMap<User, BukkitTask> waitForSelection = new HashMap<>();
 
 
+    public static void selectBlock(Sender sender) {
+        sender.sendPluginMessage(ChatColor.PERSONAL + "Select a block by clicking");
+        PrivateCmd.waitForSelection.put(sender.getUser(),
+                Bukkit.getScheduler().runTaskLaterAsynchronously(GameSurvival.getPlugin(), () -> {
+                    sender.sendPluginMessage(ChatColor.PERSONAL + "Time is out");
+                    PrivateCmd.waitForSelection.remove(sender.getUser());
+                }, 200));
+    }
+
     @Override
     public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
         if (!(cmd.getName().equalsIgnoreCase("private") || cmd.getName().equalsIgnoreCase("pv"))) {
@@ -73,11 +82,13 @@ public class PrivateCmd implements CommandListener, Listener {
                     sender.sendMessage(SurvivalHEP.getMessageSelectedBlockIsNotPrivate());
                     return;
                 }
-                if (!(block.getOwner().equals(user.getUniqueId()) || sender.hasPermission("survival.privateblocks.remove.other"))) {
+                if (!(block.getOwner().equals(user.getUniqueId()) || sender.hasPermission("survival.privateblocks" +
+                        ".remove.other"))) {
                     sender.sendMessage(SurvivalHEP.getMessageNotPrivateBlockOwner());
                     return;
                 }
-                if (!(sender.hasPermission("survival.privateblocks.remove") || sender.hasPermission("survival.privateblocks.remove.other"))) {
+                if (!(sender.hasPermission("survival.privateblocks.remove") || sender.hasPermission("survival" +
+                        ".privateblocks.remove.other"))) {
                     sender.sendMessageNoPermission(1802);
                     return;
                 }
@@ -96,7 +107,8 @@ public class PrivateCmd implements CommandListener, Listener {
                     sender.sendMessage(SurvivalHEP.getMessageSelectedBlockIsNotPrivate());
                     return;
                 }
-                if (!(block.getOwner().equals(user.getUniqueId()) || sender.hasPermission("survival.privateblocks.member.add.other") || sender.hasPermission("survival.privateblocks.member.remove.other"))) {
+                if (!(block.getOwner().equals(user.getUniqueId()) || sender.hasPermission("survival.privateblocks" +
+                        ".member.add.other") || sender.hasPermission("survival.privateblocks.member.remove.other"))) {
                     sender.sendMessage(SurvivalHEP.getMessageNotPrivateBlockOwner());
                     return;
                 }
@@ -106,7 +118,8 @@ public class PrivateCmd implements CommandListener, Listener {
 
 
                 if (args.get(1).equalsIgnoreCase("add")) {
-                    if (!(sender.hasPermission("survival.privateblocks.member.add") || sender.hasPermission("survival.privateblocks.member.add.other"))) {
+                    if (!(sender.hasPermission("survival.privateblocks.member.add") || sender.hasPermission("survival" +
+                            ".privateblocks.member.add.other"))) {
                         sender.sendMessageNoPermission(1800);
                     }
                     if (!args.isLengthEquals(3, true) || !args.get(2).isPlayerDatabaseName(true)) {
@@ -117,7 +130,8 @@ public class PrivateCmd implements CommandListener, Listener {
                     user.resetSelectedBlock();
                     sender.sendPluginMessage(ChatColor.PERSONAL + "Added member " + ChatColor.VALUE + args.get(2).toDbUser().getName());
                 } else if (args.get(1).equalsIgnoreCase("remove")) {
-                    if (!(sender.hasPermission("survival.privateblocks.member.remove") || sender.hasPermission("survival.privateblocks.member.remove.other"))) {
+                    if (!(sender.hasPermission("survival.privateblocks.member.remove") || sender.hasPermission(
+                            "survival.privateblocks.member.remove.other"))) {
                         sender.sendMessageNoPermission(1804);
                         return;
                     }
@@ -152,11 +166,13 @@ public class PrivateCmd implements CommandListener, Listener {
                     sender.sendMessage(SurvivalHEP.getMessageSelectedBlockIsNotPrivate());
                     return;
                 }
-                if (!(block.getOwner().equals(user.getUniqueId()) || sender.hasPermission("survival.privateblocks.password.other"))) {
+                if (!(block.getOwner().equals(user.getUniqueId()) || sender.hasPermission("survival.privateblocks" +
+                        ".password.other"))) {
                     sender.sendMessage(SurvivalHEP.getMessageNotPrivateBlockOwner());
                     return;
                 }
-                if (!(sender.hasPermission("survival.privateblocks.password") || sender.hasPermission("survival.privateblocks.password.other"))) {
+                if (!(sender.hasPermission("survival.privateblocks.password") || sender.hasPermission("survival" +
+                        ".privateblocks.password.other"))) {
                     return;
                 }
 
@@ -182,11 +198,13 @@ public class PrivateCmd implements CommandListener, Listener {
                     sender.sendMessage(SurvivalHEP.getMessageSelectedBlockIsNotPrivate());
                     return;
                 }
-                if (!(block.getOwner().equals(user.getUniqueId()) || sender.hasPermission("survival.privateblocks.public.other", 1808))) {
+                if (!(block.getOwner().equals(user.getUniqueId()) || sender.hasPermission("survival.privateblocks" +
+                        ".public.other", 1808))) {
                     sender.sendMessage(SurvivalHEP.getMessageNotPrivateBlockOwner());
                     return;
                 }
-                if (!(sender.hasPermission("survival.privateblocks.public") || sender.hasPermission("survival.privateblocks.public.other"))) {
+                if (!(sender.hasPermission("survival.privateblocks.public") || sender.hasPermission("survival" +
+                        ".privateblocks.public.other"))) {
                     sender.sendMessageNoPermission(1807);
                     return;
                 }
@@ -202,14 +220,6 @@ public class PrivateCmd implements CommandListener, Listener {
                 break;
             default:
         }
-    }
-
-    public static void selectBlock(Sender sender) {
-        sender.sendPluginMessage(ChatColor.PERSONAL + "Select a block by clicking");
-        PrivateCmd.waitForSelection.put(sender.getUser(), Bukkit.getScheduler().runTaskLaterAsynchronously(GameSurvival.getPlugin(), () -> {
-            sender.sendPluginMessage(ChatColor.PERSONAL + "Time is out");
-            PrivateCmd.waitForSelection.remove(sender.getUser());
-        }, 200));
     }
 
     @EventHandler

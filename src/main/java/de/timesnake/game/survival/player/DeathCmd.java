@@ -20,7 +20,8 @@ public class DeathCmd implements Listener, CommandListener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         e.setDeathMessage(Chat.getSenderPlugin(Plugin.SURVIVAL) + ChatColor.VALUE + Server.getUser(e.getEntity()).getChatName() + ChatColor.QUICK_INFO + " died");
-        Server.getUser(e.getEntity()).asSender(Plugin.SURVIVAL).sendMessageCommandHelp("Teleport to death-point", "back");
+        Server.getUser(e.getEntity()).asSender(Plugin.SURVIVAL).sendMessageCommandHelp("Teleport to death-point",
+                "back");
         ((SurvivalUser) Server.getUser(e.getEntity())).setDeathLocation(e.getEntity().getLocation());
     }
 
@@ -33,7 +34,8 @@ public class DeathCmd implements Listener, CommandListener {
                     sender.getPlayer().teleport(user.getDeathLocation());
                     sender.sendPluginMessage(ChatColor.PERSONAL + "Teleported to death-point");
                 } else {
-                    sender.sendPluginMessage(ChatColor.WARNING + "You never died " + Chat.getMessageCode("H", 1906, Plugin.SURVIVAL));
+                    sender.sendPluginMessage(ChatColor.WARNING + "You never died " + Chat.getMessageCode("H", 1906,
+                            Plugin.SURVIVAL));
                 }
             }
         }

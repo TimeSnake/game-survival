@@ -114,7 +114,9 @@ public class PrivateBlockManger implements Listener {
             this.blocks.remove(block.getId());
             user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.PERSONAL + "Selected block is now free");
         } else {
-            user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.WARNING + "Selected block is not private " + Chat.getMessageCode("E", 2000, Plugin.PRIVATE_BLOCKS));
+            user.sendPluginMessage(Plugin.PRIVATE_BLOCKS,
+                    ChatColor.WARNING + "Selected block is not private " + Chat.getMessageCode("E", 2000,
+                            Plugin.PRIVATE_BLOCKS));
             user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.PERSONAL + "Please contact a supporter");
         }
     }
@@ -129,13 +131,18 @@ public class PrivateBlockManger implements Listener {
                 for (BlockFace blockFace : BlockFace.values()) {
                     Block nearBlock = block.getRelative(blockFace);
                     if (nearBlock.getType().equals(block.getType())) {
-                        if (isInventoryPrivate(((InventoryHolder) nearBlock.getState()).getInventory().getHolder(), ((InventoryHolder) nearBlock.getState()).getInventory())) {
-                            PrivateInventoryBlock nearPrivateBlock = (PrivateInventoryBlock) SurvivalServer.getPrivateBlockManger().getBlock(nearBlock);
+                        if (isInventoryPrivate(((InventoryHolder) nearBlock.getState()).getInventory().getHolder(),
+                                ((InventoryHolder) nearBlock.getState()).getInventory())) {
+                            PrivateInventoryBlock nearPrivateBlock =
+                                    (PrivateInventoryBlock) SurvivalServer.getPrivateBlockManger().getBlock(nearBlock);
                             assert nearPrivateBlock != null;
-                            if (!user.getUniqueId().equals(nearPrivateBlock.getOwner()) || !user.hasPermission("survival.privateblocks.nearby"))
+                            if (!user.getUniqueId().equals(nearPrivateBlock.getOwner()) || !user.hasPermission(
+                                    "survival.privateblocks.nearby"))
                                 if (!user.hasPermission("survival.privateblocks.nearby.other")) {
                                     e.setCancelled(true);
-                                    user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.WARNING + "You can not place a chest nearby a foreign chest " + Chat.getMessageCode("H", 1907, Plugin.PRIVATE_BLOCKS));
+                                    user.sendPluginMessage(Plugin.PRIVATE_BLOCKS, ChatColor.WARNING + "You can not " +
+                                            "place a chest nearby a foreign chest " + Chat.getMessageCode("H", 1907,
+                                            Plugin.PRIVATE_BLOCKS));
                                     return;
                                 }
                         } else {
@@ -180,9 +187,11 @@ public class PrivateBlockManger implements Listener {
             Player player = (Player) e.getPlayer();
 
             assert block != null;
-            if (!block.getOwner().equals(player.getUniqueId()) || !player.hasPermission("survival.privateblocks.inventory")) {
+            if (!block.getOwner().equals(player.getUniqueId()) || !player.hasPermission("survival.privateblocks" +
+                    ".inventory")) {
 
-                if (!block.getMembers().contains(player.getUniqueId()) || !player.hasPermission("survival.privateblocks.inventory")) {
+                if (!block.getMembers().contains(player.getUniqueId()) || !player.hasPermission("survival" +
+                        ".privateblocks.inventory")) {
 
                     if (!player.hasPermission("survival.privateblocks.inventory.other")) {
                         e.setCancelled(true);
@@ -200,7 +209,8 @@ public class PrivateBlockManger implements Listener {
                 e.setCancelled(true);
             } else {
                 PrivateInventoryBlock sourceBlock = SurvivalServer.getPrivateBlockManger().getBlock(e.getSource());
-                PrivateInventoryBlock destinationBlock = SurvivalServer.getPrivateBlockManger().getBlock(e.getDestination());
+                PrivateInventoryBlock destinationBlock =
+                        SurvivalServer.getPrivateBlockManger().getBlock(e.getDestination());
                 assert sourceBlock != null;
                 assert destinationBlock != null;
                 if (((sourceBlock.getOwner().equals(destinationBlock.getOwner()) && Bukkit.getPlayer(destinationBlock.getOwner()).hasPermission("survival.privateblocks.inventory")) || Bukkit.getPlayer(destinationBlock.getOwner()).hasPermission("survival.privateblocks.inventory.other"))) {

@@ -13,7 +13,10 @@ import java.util.UUID;
 
 public class Stash extends Machine {
 
-    private static final List<Material> SMALL_STACKED_ITEMS = List.of(Material.SNOWBALL, Material.ENDER_PEARL, Material.ARMOR_STAND, Material.BUCKET, Material.ACACIA_SIGN, Material.BIRCH_SIGN, Material.CRIMSON_SIGN, Material.DARK_OAK_SIGN, Material.JUNGLE_SIGN, Material.OAK_SIGN, Material.SPRUCE_SIGN, Material.WARPED_SIGN);
+    private static final List<Material> SMALL_STACKED_ITEMS = List.of(Material.SNOWBALL, Material.ENDER_PEARL,
+            Material.ARMOR_STAND, Material.BUCKET, Material.ACACIA_SIGN, Material.BIRCH_SIGN, Material.CRIMSON_SIGN,
+            Material.DARK_OAK_SIGN, Material.JUNGLE_SIGN, Material.OAK_SIGN, Material.SPRUCE_SIGN,
+            Material.WARPED_SIGN);
 
     private static final ExItemStack up = new ExItemStack(Material.WHITE_WOOL, 0, "up");
     private static final ExItemStack down = new ExItemStack(Material.WHITE_WOOL, 9, "down");
