@@ -4,7 +4,6 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.object.Type;
-import de.timesnake.database.util.server.DbGameServer;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.player.DeathCmd;
 import de.timesnake.game.survival.player.SurvivalSpawnCmd;
@@ -20,6 +19,10 @@ import java.util.List;
 
 
 public class GameSurvival extends JavaPlugin {
+
+    public static GameSurvival getPlugin() {
+        return plugin;
+    }
 
     private static GameSurvival plugin;
 
@@ -45,7 +48,7 @@ public class GameSurvival extends JavaPlugin {
         Server.getCommandManager().addCommand(this, "survivalspawn", List.of("spawnsurvival", "sspawn"),
                 new SurvivalSpawnCmd(), Plugin.SURVIVAL);
 
-        Database.getServers().<DbGameServer>getServer(Type.Server.GAME, Bukkit.getPort()).setTask("survival");
+        Database.getServers().getServer(Type.Server.GAME, Bukkit.getPort()).setTask("survival");
 
         SurvivalServerManager.getInstance().onSurvivalEnable();
 
@@ -55,10 +58,6 @@ public class GameSurvival extends JavaPlugin {
     @Override
     public void onDisable() {
         SurvivalServerManager.getInstance().onSurvivalDisable();
-    }
-
-    public static GameSurvival getPlugin() {
-        return plugin;
     }
 
 }
