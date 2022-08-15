@@ -7,7 +7,6 @@ import de.timesnake.database.util.object.Type;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.player.DeathCmd;
 import de.timesnake.game.survival.player.SurvivalSpawnCmd;
-import de.timesnake.game.survival.privates.PrivateCmd;
 import de.timesnake.game.survival.rewards.RewardHandler;
 import de.timesnake.game.survival.server.SurvivalServerManager;
 import de.timesnake.game.survival.world.SpawnProtection;
@@ -37,7 +36,6 @@ public class GameSurvival extends JavaPlugin {
 
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new SpawnProtection(), this);
-        pm.registerEvents(new PrivateCmd(), this);
         pm.registerEvents(new DeathCmd(), this);
         pm.registerEvents(SurvivalServerManager.getInstance(), this);
         pm.registerEvents(new RewardHandler(), this);
