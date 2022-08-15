@@ -1,12 +1,13 @@
 package de.timesnake.game.survival.machines;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.chat.ChatColor;
 import de.timesnake.basic.bukkit.util.chat.Sender;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractListener;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.main.GameSurvival;
+import de.timesnake.library.basic.util.chat.ExTextColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -172,14 +173,14 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
                         Harvester harv = new Harvester(this.getNewId(), loc);
                         this.harvesterLocations.put(loc, harv);
                         this.usedIds.add(harv.getId());
-                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL, ChatColor.PERSONAL + " " +
-                                "Harvester placed");
+                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
+                                Component.text("Harvester placed", ExTextColor.PERSONAL));
                     } else if (tag.equals(String.valueOf(Miner.ITEM.getId()))) {
                         Miner miner = new Miner(this.getNewId(), loc);
                         this.minerLocations.put(loc, miner);
                         this.usedIds.add(miner.getId());
-                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL, ChatColor.PERSONAL + " Miner" +
-                                " placed");
+                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
+                                Component.text(" Miner placed", ExTextColor.PERSONAL));
                     }
                 }
             }
@@ -198,14 +199,14 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
                 this.harvesterLocations.remove(block.getLocation());
                 e.setDropItems(false);
                 Server.dropItem(loc, Harvester.ITEM);
-                sender.sendPluginMessage(ChatColor.PERSONAL + "Harvester destroyed");
+                sender.sendPluginMessage(Component.text("Harvester destroyed", ExTextColor.PERSONAL));
             } else if (this.minerLocations.containsKey(loc)) {
                 Miner miner = this.minerLocations.get(loc);
                 this.usedIds.remove(miner.getId());
                 this.minerLocations.remove(loc);
                 e.setDropItems(false);
                 Server.dropItem(loc, Miner.ITEM);
-                sender.sendPluginMessage(ChatColor.PERSONAL + "Miner destroyed");
+                sender.sendPluginMessage(Component.text("Miner destroyed", ExTextColor.PERSONAL));
             }
         }
     }

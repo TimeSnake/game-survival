@@ -3,7 +3,6 @@ package de.timesnake.game.survival.server;
 import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.game.survival.machines.MachineManager;
 import de.timesnake.game.survival.player.SurvivalUser;
-import de.timesnake.game.survival.privates.PrivateBlockManger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,7 +14,6 @@ public class SurvivalServerManager extends ServerManager implements Listener {
         return (SurvivalServerManager) ServerManager.getInstance();
     }
 
-    private PrivateBlockManger privateBlockManger;
     private MachineManager machineManager;
 
     private Location survivalSpawn;
@@ -35,10 +33,6 @@ public class SurvivalServerManager extends ServerManager implements Listener {
     @Override
     public SurvivalUser loadUser(Player player) {
         return new SurvivalUser(player);
-    }
-
-    public PrivateBlockManger getPrivateBlockManger() {
-        return privateBlockManger;
     }
 
     public MachineManager getMachineManager() {
