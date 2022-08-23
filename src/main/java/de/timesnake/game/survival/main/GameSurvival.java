@@ -5,6 +5,7 @@ import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.object.Type;
 import de.timesnake.game.survival.chat.Plugin;
+import de.timesnake.game.survival.machines.StashCmd;
 import de.timesnake.game.survival.player.DeathCmd;
 import de.timesnake.game.survival.player.SurvivalSpawnCmd;
 import de.timesnake.game.survival.rewards.RewardHandler;
@@ -45,6 +46,8 @@ public class GameSurvival extends JavaPlugin {
         Server.getCommandManager().addCommand(this, "back", new DeathCmd(), Plugin.SURVIVAL);
         Server.getCommandManager().addCommand(this, "survivalspawn", List.of("spawnsurvival", "sspawn"),
                 new SurvivalSpawnCmd(), Plugin.SURVIVAL);
+
+        Server.getCommandManager().addCommand(this, "stash", new StashCmd(), Plugin.SURVIVAL);
 
         Database.getServers().getServer(Type.Server.GAME, Bukkit.getPort()).setTask("survival");
 
