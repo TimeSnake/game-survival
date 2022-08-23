@@ -4,7 +4,7 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.exceptions.WorldNotExistException;
 import de.timesnake.basic.bukkit.util.file.ExFile;
 import de.timesnake.game.survival.chat.Plugin;
-import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.inventory.InventoryHolder;
 
 import java.util.Collection;
@@ -20,7 +20,7 @@ public class MachinesFile extends ExFile {
 
     public Machine getMachine(Integer id) {
         Machine.Type type;
-        Location loc;
+        Block block;
 
         String typeString = super.getString(MACHINES_PATH + "." + id + "." + TYPE);
         if (typeString == null) {
@@ -35,7 +35,7 @@ public class MachinesFile extends ExFile {
         }
 
         try {
-            loc = super.getLocation(MACHINES_PATH + "." + id);
+            block = super.getBlock(MACHINES_PATH + "." + id);
         } catch (WorldNotExistException e) {
             Server.printWarning(Plugin.MACHINES, "Can not read location of machine: " + id);
             return null;
@@ -43,14 +43,18 @@ public class MachinesFile extends ExFile {
 
 
         if (type.equals(Machine.Type.HARVESTER)) {
-            if (loc.getBlock().getState() instanceof InventoryHolder) {
-                return new Harvester(id, loc);
+            if (block.getState() instanceof InventoryHolder) {
+                return new Harvester(id, block);
             } else {
                 Server.printWarning(Plugin.MACHINES, "Can not load harvester: " + id);
                 return null;
             }
-        } else if (type.equals(Machine.Type.MINER)) {
-            return new Miner(id, loc);
+        } else if (type.equals(Machine.Type.STASH)) {
+            StashFile stashFile = new StashFile(id);
+            Stash stash = new Stash(id, block, stashFile.getStashOwnerId());
+            stashFile.getStashItems().forEach(stash::addItem);
+            stash.updateInventories();
+            return stash;
         }
         return null;
     }
@@ -62,14 +66,28 @@ public class MachinesFile extends ExFile {
 
     public void addMachine(Machine machine) {
         Integer id = machine.getId();
-        super.set(MACHINES_PATH + "." + id, machine.getLocation().getBlock()).save();
+        super.set(MACHINES_PATH + "." + id, machine.getBlock()).save();
         super.set(MACHINES_PATH + "." + id + "." + "type", machine.getType().name()).save();
+
+        if (machine instanceof Stash stash) {
+            StashFile stashFile = new StashFile(id);
+            stashFile.delete();
+            stashFile.create();
+            stashFile.saveStash(stash.getBlock(), stash.getOwner(), stash.getMembers(), stash.getItems());
+        }
         Server.printText(Plugin.MACHINES, "Saved machine " + id + " to file");
+        super.save();
     }
 
     public void removeMachine(Machine machine) {
         Integer id = machine.getId();
         super.remove(MACHINES_PATH + "." + id);
+
+        if (machine instanceof Stash) {
+            new StashFile(id).delete();
+        }
+
+        super.save();
     }
 
     public void resetMachines() {

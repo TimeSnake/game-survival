@@ -2,14 +2,12 @@ package de.timesnake.game.survival.machines;
 
 import de.timesnake.basic.bukkit.util.user.ExItemStack;
 import de.timesnake.game.survival.main.GameSurvival;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -19,18 +17,31 @@ import java.util.List;
 public class Harvester extends Machine implements Listener {
 
     public static final String NAME = "§rHarvester";
-
-    public static final ExItemStack ITEM = new ExItemStack(Material.DROPPER, 1, NAME, List.of("§7Harvester",
-            "§7Harvests trees automatic"));
+    public static final ExItemStack ITEM = ExItemStack.getHashedIdItem(Material.DROPPER, "harvester")
+            .setDisplayName(NAME).setLore("§7Harvester", "§7Harvests trees automatic").immutable();
     public static final Integer RADIUS = 5;
+
+    public static void loadRecipe() {
+        ShapedRecipe harvesterRecipe = new ShapedRecipe(NamespacedKey.minecraft("harvester"), Harvester.ITEM);
+
+        harvesterRecipe.shape("EBE", "HDH", "EPE");
+
+        harvesterRecipe.setIngredient('E', Material.EMERALD);
+        harvesterRecipe.setIngredient('B', Material.LAVA_BUCKET);
+        harvesterRecipe.setIngredient('H', Material.HOPPER);
+        harvesterRecipe.setIngredient('D', Material.DIAMOND_AXE);
+        harvesterRecipe.setIngredient('P', Material.STICKY_PISTON);
+
+        Bukkit.getServer().addRecipe(harvesterRecipe);
+    }
 
     private static final ArrayList<Material> woodTypes = new ArrayList<>(List.of(Material.ACACIA_LOG,
             Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG, Material.JUNGLE_LOG, Material.DARK_OAK_LOG));
 
     private BukkitTask task;
 
-    public Harvester(Integer id, Location location) {
-        super(id, location);
+    public Harvester(Integer id, Block block) {
+        super(id, block);
     }
 
     public Machine.Type getType() {
@@ -38,9 +49,9 @@ public class Harvester extends Machine implements Listener {
     }
 
     boolean isInRange(Location loc) {
-        int xDiff = this.location.getBlockX() - loc.getBlockX();
-        int yDiff = this.location.getBlockY() - loc.getBlockY();
-        int zDiff = this.location.getBlockZ() - loc.getBlockZ();
+        int xDiff = this.block.getX() - loc.getBlockX();
+        int yDiff = this.block.getY() - loc.getBlockY();
+        int zDiff = this.block.getZ() - loc.getBlockZ();
 
         return (xDiff < RADIUS && xDiff > -RADIUS) && yDiff == 0 && (zDiff < RADIUS && zDiff > -RADIUS);
     }
@@ -54,19 +65,18 @@ public class Harvester extends Machine implements Listener {
         task = new BukkitRunnable() {
 
             final boolean yFelled = true;
-            Integer x = location.getBlockX() - RADIUS;
-            int y = location.getBlockY();
-            int z = location.getBlockZ() - RADIUS;
-
-            final int xEnd = location.getBlockX() + RADIUS;
-            final int zEnd = location.getBlockZ() + RADIUS;
+            final int xEnd = block.getX() + RADIUS;
+            final int zEnd = block.getZ() + RADIUS;
+            Integer x = block.getX() - RADIUS;
+            int y = block.getY();
+            int z = block.getZ() - RADIUS;
 
             @Override
             public void run() {
                 if (yFelled) {
                     if (x <= xEnd) {
                         if (z <= zEnd) {
-                            Location loc = new Location(location.getWorld(), x, y, z);
+                            Location loc = new Location(block.getWorld(), x, y, z);
                             if (isFellable(loc)) {
                                 fellBlock(loc);
                                 z++;
@@ -75,13 +85,13 @@ public class Harvester extends Machine implements Listener {
                                 this.run();
                             }
                         } else {
-                            z = location.getBlockZ() - RADIUS;
+                            z = block.getZ() - RADIUS;
                             x++;
                         }
                     } else {
                         y++;
-                        x = location.getBlockX() - RADIUS;
-                        z = location.getBlockZ() - RADIUS;
+                        x = block.getX() - RADIUS;
+                        z = block.getZ() - RADIUS;
                     }
 
                 }
@@ -113,7 +123,7 @@ public class Harvester extends Machine implements Listener {
     }
 
     private Inventory getInventory() {
-        return ((InventoryHolder) super.getLocation().getBlock().getState()).getInventory();
+        return ((InventoryHolder) super.getBlock().getState()).getInventory();
     }
 
 }

@@ -2,24 +2,24 @@ package de.timesnake.game.survival.machines;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.chat.Sender;
+import de.timesnake.basic.bukkit.util.user.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractListener;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.main.GameSurvival;
 import de.timesnake.library.basic.util.chat.ExTextColor;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.StructureGrowEvent;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -30,8 +30,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
 
     private final MachinesFile file = new MachinesFile();
 
-    private final HashMap<Location, Harvester> harvesterLocations = new HashMap<>();
-    private final HashMap<Location, Miner> minerLocations = new HashMap<>();
+    private final HashMap<Machine.Type, HashMap<Block, Machine>> machineByBlockByType = new HashMap<>();
 
     private final Collection<Integer> usedIds = new ArrayList<>();
 
@@ -39,54 +38,17 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
         Server.registerListener(this, GameSurvival.getPlugin());
         Server.getInventoryEventManager().addInteractListener(this, Crafter.ITEM);
 
-        //harvester
-        ShapedRecipe harvesterRecipe = new ShapedRecipe(NamespacedKey.minecraft("harvester"), Harvester.ITEM);
+        Harvester.loadRecipe();
+        Crafter.loadRecipe();
+        Stash.loadRecipe();
+        Server.printText(Plugin.SURVIVAL, "Loaded machine recipes");
 
-        harvesterRecipe.shape("EBE", "HDH", "EPE");
-
-        harvesterRecipe.setIngredient('E', Material.EMERALD);
-        harvesterRecipe.setIngredient('B', Material.LAVA_BUCKET);
-        harvesterRecipe.setIngredient('H', Material.HOPPER);
-        harvesterRecipe.setIngredient('D', Material.DIAMOND_AXE);
-        harvesterRecipe.setIngredient('P', Material.STICKY_PISTON);
-
-        Bukkit.getServer().addRecipe(harvesterRecipe);
-        Server.printText(Plugin.MACHINES, "Loaded harvester recipe");
-
-        //miner
-        ShapedRecipe minerRecipe = new ShapedRecipe(NamespacedKey.minecraft("miner"), Miner.ITEM);
-
-        minerRecipe.shape("EBE", "HDH", "EME");
-
-        minerRecipe.setIngredient('E', Material.EMERALD);
-        minerRecipe.setIngredient('B', Material.WATER_BUCKET);
-        minerRecipe.setIngredient('H', Material.HOPPER);
-        minerRecipe.setIngredient('D', Material.DIAMOND_PICKAXE);
-        minerRecipe.setIngredient('M', Material.MAGMA_CREAM);
-
-        Bukkit.getServer().addRecipe(minerRecipe);
-        Server.printText(Plugin.MACHINES, "Loaded miner recipe");
-
-        //craftingtable
-        ShapedRecipe craftRecipe = new ShapedRecipe(NamespacedKey.minecraft("crafting"), Crafter.ITEM);
-
-        craftRecipe.shape("ASD", "BZE", "CSF");
-
-        craftRecipe.setIngredient('S', Material.SHULKER_SHELL);
-        craftRecipe.setIngredient('Z', Material.CRAFTING_TABLE);
-        craftRecipe.setIngredient('A', Material.ACACIA_LOG);
-        craftRecipe.setIngredient('B', Material.BIRCH_LOG);
-        craftRecipe.setIngredient('C', Material.DARK_OAK_LOG);
-        craftRecipe.setIngredient('D', Material.JUNGLE_LOG);
-        craftRecipe.setIngredient('E', Material.OAK_LOG);
-        craftRecipe.setIngredient('F', Material.SPRUCE_LOG);
-
-        Bukkit.getServer().addRecipe(craftRecipe);
-        Server.printText(Plugin.MACHINES, "Loaded portable crafting table");
-
-        //file
         Collection<Integer> ids = this.file.getMachineIds();
-        Server.printText(Plugin.MACHINES, "Loading machines");
+        this.usedIds.addAll(ids);
+
+        for (Machine.Type type : Machine.Type.values()) {
+            this.machineByBlockByType.put(type, new HashMap<>());
+        }
 
         for (Integer id : ids) {
             Machine machine = this.file.getMachine(id);
@@ -94,119 +56,100 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
                 Server.printError(Plugin.MACHINES, "Can not load machine: " + id + " (null)");
                 continue;
             }
-            if (machine.getType().equals(Machine.Type.HARVESTER)) {
-                this.harvesterLocations.put(machine.getLocation(), (Harvester) machine);
-                this.usedIds.add(machine.getId());
-                Server.printText(Plugin.MACHINES, "Loaded harvester " + machine.getId());
-            } else if (machine.getType().equals(Machine.Type.MINER)) {
-                this.minerLocations.put(machine.getLocation(), (Miner) machine);
-                this.usedIds.add(machine.getId());
-                Server.printText(Plugin.MACHINES, "Loaded miner " + machine.getId());
-            } else {
-                Server.printError(Plugin.MACHINES, "Can not load machine: " + id + " (Unknown type)");
-            }
+            this.machineByBlockByType.get(machine.getType()).put(machine.getBlock(), machine);
         }
 
-        this.generate();
+        Server.printText(Plugin.MACHINES, "Loaded machines");
     }
 
     public void saveMachinesToFile() {
         this.file.resetMachines();
-        this.saveToFile(this.harvesterLocations.values());
-        this.saveToFile(this.minerLocations.values());
+        this.machineByBlockByType.values().forEach(m -> m.values().forEach(this.file::addMachine));
+        Server.printText(Plugin.SURVIVAL, "Saved machines to file");
     }
-
-    private <M extends Machine> void saveToFile(Collection<M> machines) {
-        for (Machine machine : machines) {
-            this.file.addMachine(machine);
-        }
-    }
-
-    private void generate() {
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                for (Miner miner : minerLocations.values()) {
-                    miner.generate();
-                }
-            }
-        }.runTaskTimer(GameSurvival.getPlugin(), 0, 60 * 20);
-    }
-
 
     @EventHandler
     public void onStructureGrow(StructureGrowEvent e) {
-        Block treeBlock = e.getLocation().getBlock();
         Location treeLoc = e.getLocation();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Harvester harvester : harvesterLocations.values()) {
-                    if (harvester.isInRange(treeLoc)) {
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                harvester.fellTree();
-                            }
-                        }.runTaskLater(GameSurvival.getPlugin(), 20);
-                    }
+        Server.runTaskAsynchrony(() -> {
+            for (Machine machine : this.machineByBlockByType.get(Machine.Type.HARVESTER).values()) {
+                Harvester harvester = ((Harvester) machine);
+                if (harvester.isInRange(treeLoc)) {
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            harvester.fellTree();
+                        }
+                    }.runTaskLater(GameSurvival.getPlugin(), 20);
                 }
             }
-        }.runTaskAsynchronously(GameSurvival.getPlugin());
+        }, GameSurvival.getPlugin());
     }
 
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e) {
-        if (e.getBlock().getType().equals(Material.DROPPER)) {
-            Block block = e.getBlock();
-            org.bukkit.inventory.ItemStack item = e.getItemInHand();
-            if (item.hasItemMeta()) {
-                if (item.getItemMeta() != null) {
-                    String tag = item.getItemMeta().getLocalizedName();
-                    if (tag == null) {
-                        return;
-                    }
-                    Location loc = block.getLocation();
-                    if (tag.equals(String.valueOf(Harvester.ITEM.getId())) && block.getState() instanceof InventoryHolder) {
-                        Harvester harv = new Harvester(this.getNewId(), loc);
-                        this.harvesterLocations.put(loc, harv);
-                        this.usedIds.add(harv.getId());
-                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
-                                Component.text("Harvester placed", ExTextColor.PERSONAL));
-                    } else if (tag.equals(String.valueOf(Miner.ITEM.getId()))) {
-                        Miner miner = new Miner(this.getNewId(), loc);
-                        this.minerLocations.put(loc, miner);
-                        this.usedIds.add(miner.getId());
-                        Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
-                                Component.text(" Miner placed", ExTextColor.PERSONAL));
-                    }
-                }
+        Block block = e.getBlock();
+        ExItemStack item = ExItemStack.getItem(e.getItemInHand(), true);
+        User user = Server.getUser(e.getPlayer());
+
+        if (Harvester.ITEM.equals(item)) {
+            Harvester harv = new Harvester(this.getNewId(), block);
+            this.machineByBlockByType.get(Machine.Type.HARVESTER).put(block, harv);
+            this.usedIds.add(harv.getId());
+            Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
+                    Component.text("Harvester placed", ExTextColor.PERSONAL));
+        } else if (Stash.ITEM.equals(item)) {
+            if (this.machineByBlockByType.get(Machine.Type.STASH).values().stream().map(
+                    s -> ((Stash) s).getOwner()).toList().contains(user.getUniqueId())) {
+                user.sendPluginMessage(Plugin.SURVIVAL, Component.text("You have already a stash", ExTextColor.WARNING));
+                e.setCancelled(true);
+                e.setBuild(false);
+                return;
             }
+
+            Stash stash = new Stash(this.getNewId(), block, e.getPlayer().getUniqueId());
+            this.machineByBlockByType.get(Machine.Type.STASH).put(block, stash);
+            this.usedIds.add(stash.getId());
+            Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
+                    Component.text("Stash placed", ExTextColor.PERSONAL));
         }
     }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
-        if (e.getBlock().getType().equals(Material.DROPPER)) {
-            Block block = e.getBlock();
-            Location loc = e.getBlock().getLocation();
-            Sender sender = Server.getUser(e.getPlayer()).asSender(Plugin.SURVIVAL);
-            if (this.harvesterLocations.containsKey(loc)) {
-                Harvester harv = this.harvesterLocations.get(loc);
-                this.usedIds.remove(harv.getId());
-                this.harvesterLocations.remove(block.getLocation());
+        Block block = e.getBlock();
+        User user = Server.getUser(e.getPlayer());
+        Sender sender = user.asSender(Plugin.SURVIVAL);
+
+        if (this.machineByBlockByType.get(Machine.Type.HARVESTER).containsKey(block)) {
+            Harvester harv = (Harvester) this.machineByBlockByType.get(Machine.Type.HARVESTER).remove(block);
+            this.file.removeMachine(harv);
+            this.usedIds.remove(harv.getId());
+            e.setDropItems(false);
+            Server.dropItem(block.getLocation(), Harvester.ITEM);
+            sender.sendPluginMessage(Component.text("Harvester destroyed", ExTextColor.PERSONAL));
+        } else if (this.machineByBlockByType.get(Machine.Type.STASH).containsKey(block)) {
+            Stash stash = ((Stash) this.machineByBlockByType.get(Machine.Type.STASH).get(block));
+
+            if (stash.getItems().isEmpty()) {
+                if (stash.getOwner().equals(user.getUniqueId())) {
+                    this.machineByBlockByType.get(Machine.Type.STASH).remove(block);
+                    this.file.removeMachine(stash);
+                    this.usedIds.remove(stash.getId());
+                    e.setDropItems(false);
+                    Server.dropItem(block.getLocation(), Stash.ITEM);
+                    sender.sendPluginMessage(Component.text("Stash destroyed", ExTextColor.PERSONAL));
+                } else {
+                    e.setDropItems(false);
+                    e.setCancelled(true);
+                    sender.sendPluginMessage(Component.text("This is not your stash", ExTextColor.WARNING));
+                }
+            } else {
                 e.setDropItems(false);
-                Server.dropItem(loc, Harvester.ITEM);
-                sender.sendPluginMessage(Component.text("Harvester destroyed", ExTextColor.PERSONAL));
-            } else if (this.minerLocations.containsKey(loc)) {
-                Miner miner = this.minerLocations.get(loc);
-                this.usedIds.remove(miner.getId());
-                this.minerLocations.remove(loc);
-                e.setDropItems(false);
-                Server.dropItem(loc, Miner.ITEM);
-                sender.sendPluginMessage(Component.text("Miner destroyed", ExTextColor.PERSONAL));
+                e.setCancelled(true);
+                sender.sendPluginMessage(Component.text("Stash must be empty before it can be destroyed",
+                        ExTextColor.WARNING));
             }
         }
     }
@@ -226,5 +169,54 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
             e.getUser().getPlayer().openWorkbench(null, true);
             e.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        Block block = e.getClickedBlock();
+
+        if (block == null) {
+            return;
+        }
+
+        Stash stash = (Stash) this.machineByBlockByType.get(Machine.Type.STASH).get(block);
+        User user = Server.getUser(e.getPlayer());
+
+        if (stash != null && !e.getPlayer().isSneaking()) {
+            if (stash.getOwner().equals(user.getUniqueId()) || stash.getMembers().contains(user.getUniqueId())) {
+                stash.openInventoryFor(user);
+                e.setCancelled(true);
+            } else {
+                user.sendPluginMessage(Plugin.SURVIVAL, Component.text("Access denied", ExTextColor.WARNING));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPistonPush(BlockPistonExtendEvent e) {
+        for (HashMap<Block, Machine> m : this.machineByBlockByType.values()) {
+            for (Block key : e.getBlocks()) {
+                if (m.containsKey(key)) {
+                    e.setCancelled(true);
+                    return;
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPistonPush(BlockPistonRetractEvent e) {
+        for (HashMap<Block, Machine> m : this.machineByBlockByType.values()) {
+            for (Block key : e.getBlocks()) {
+                if (m.containsKey(key)) {
+                    e.setCancelled(true);
+                    return;
+                }
+            }
+        }
+    }
+
+    public HashMap<Machine.Type, HashMap<Block, Machine>> getMachineByBlockByType() {
+        return machineByBlockByType;
     }
 }

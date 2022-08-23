@@ -6,56 +6,45 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class StashFile extends ExFile {
-
-    private static final String ID = "id";
 
     private static final String BLOCK = "block";
     private static final String OWNER = "owner";
     private static final String MEMBERS = "members";
     private static final String ITEMS = "items";
 
-    public StashFile(String name) {
-        super("survival", "stash_" + name);
+    public StashFile(Integer id) {
+        super("survival/stash", "stash_" + id);
     }
 
-    public void addStash(Integer id, Block block, UUID owner, List<UUID> members, List<StashItem> items) {
-        super.setBlock(id + "." + BLOCK, block).save();
-        super.set(id + "." + OWNER, owner.toString()).save();
+    public void saveStash(Block block, UUID owner, List<UUID> members, Collection<StashItem> items) {
+        super.setBlock(BLOCK, block).save();
+        super.set(OWNER, owner.toString()).save();
 
-        super.setUuidList(id + "." + MEMBERS, members);
+        super.setUuidList(MEMBERS, members);
 
-        int i = 0;
-        for (StashItem item : items) {
-            super.set(id + "." + ITEMS + "." + i, item);
-        }
+        super.config.set(ITEMS, items.stream().map(StashItem::getItem).collect(Collectors.toList()));
         super.save();
     }
 
-    public void removeStash(Integer id) {
-        super.remove(String.valueOf(id));
+    public Block getStashBlock() throws WorldNotExistException {
+        return super.getBlock(BLOCK);
     }
 
-    public Block getStashBlock(Integer id) throws WorldNotExistException {
-        return super.getBlock(id + "." + BLOCK);
+    public UUID getStashOwnerId() {
+        return super.getUUID(OWNER);
     }
 
-    public UUID getStashOwnerId(Integer id) {
-        return super.getUUID(id + "." + OWNER);
+    public List<UUID> getStashMembers() {
+        return super.getUUIDList(MEMBERS);
     }
 
-    public List<UUID> getStashMembers(Integer id) {
-        return super.getUUIDList(id + "." + MEMBERS);
-    }
-
-    public List<ItemStack> getStashItems(Integer id) {
-        List<ItemStack> items = new ArrayList<>();
-        for (Integer i : super.getIntegerList(id + "." + ITEMS)) {
-            items.add(super.getItemStack(id + "." + ITEMS + "." + i));
-        }
-        return items;
+    public List<ItemStack> getStashItems() {
+        return (List<ItemStack>) super.config.getList(ITEMS, new ArrayList<>(0));
     }
 }
