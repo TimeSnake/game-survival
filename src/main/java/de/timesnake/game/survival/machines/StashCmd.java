@@ -9,6 +9,7 @@ import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.server.SurvivalServer;
 import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.extension.util.chat.Chat;
+import de.timesnake.library.extension.util.chat.Code;
 import de.timesnake.library.extension.util.cmd.Arguments;
 import de.timesnake.library.extension.util.cmd.ExCommand;
 import net.kyori.adventure.text.Component;
@@ -18,9 +19,11 @@ import java.util.Optional;
 
 public class StashCmd implements CommandListener {
 
+    private Code.Permission perm;
+
     @Override
     public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
-        if (!sender.hasPermission("survival.stash", 1815)) {
+        if (!sender.hasPermission(this.perm)) {
             return;
         }
 
@@ -89,5 +92,10 @@ public class StashCmd implements CommandListener {
             return Server.getCommandManager().getTabCompleter().getPlayerNames();
         }
         return List.of();
+    }
+
+    @Override
+    public void loadCodes(de.timesnake.library.extension.util.chat.Plugin plugin) {
+        this.perm = plugin.createPermssionCode("sur", "survival.stash");
     }
 }

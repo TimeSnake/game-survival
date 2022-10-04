@@ -7,6 +7,7 @@ import de.timesnake.basic.bukkit.util.chat.Sender;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.library.basic.util.chat.ExTextColor;
 import de.timesnake.library.extension.util.chat.Chat;
+import de.timesnake.library.extension.util.chat.Code;
 import de.timesnake.library.extension.util.cmd.Arguments;
 import de.timesnake.library.extension.util.cmd.ExCommand;
 import net.kyori.adventure.text.Component;
@@ -17,6 +18,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import java.util.List;
 
 public class DeathCmd implements Listener, CommandListener {
+
+    private Code.Permission perm;
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
@@ -30,7 +33,7 @@ public class DeathCmd implements Listener, CommandListener {
 
     @Override
     public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
-        if (sender.hasPermission("survival.death.back", 1811)) {
+        if (sender.hasPermission(this.perm)) {
             if (sender.isPlayer(true)) {
                 SurvivalUser user = (SurvivalUser) Server.getUser(sender.getPlayer());
                 if (user.getDeathLocation() != null) {
@@ -47,5 +50,10 @@ public class DeathCmd implements Listener, CommandListener {
     @Override
     public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
         return null;
+    }
+
+    @Override
+    public void loadCodes(de.timesnake.library.extension.util.chat.Plugin plugin) {
+        this.perm = plugin.createPermssionCode("sur", "survival.death.back");
     }
 }
