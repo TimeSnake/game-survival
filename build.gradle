@@ -40,7 +40,7 @@ dependencies {
 
 group = project.group
 version = '1.0-SNAPSHOT'
-description = 'game-survival'
+archivesBaseName = 'game-survival'
 java.sourceCompatibility = 1.17
 java.targetCompatibility = 1.17
 
@@ -64,11 +64,16 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-task copyJarToPlugins(type: Copy) {
-    from jar
-    into "../../plugins"
+task deleteOldPluginJar(type: Delete) {
+    delete fileTree(dir: "${project.plugins_dir}", include: "**/${archivesBaseName}-*.jar")
 }
 
+task copyJarToPlugins(type: Copy) {
+    from jar
+    into project.plugins_dir
+}
+
+copyJarToPlugins.dependsOn(deleteOldPluginJar)
 jar.finalizedBy(copyJarToPlugins)
 
 task gitPush(type: Exec) {
