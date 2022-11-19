@@ -1,5 +1,5 @@
 /*
- * game-survival.main
+ * workspace.game-survival.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -71,7 +71,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
         for (Integer id : ids) {
             Machine machine = this.file.getMachine(id);
             if (machine == null) {
-                Server.printError(Plugin.MACHINES, "Can not load machine: " + id + " (null)");
+                Server.printWarning(Plugin.MACHINES, "Can not load machine: " + id + " (null)");
                 continue;
             }
             this.machineByBlockByType.get(machine.getType()).put(machine.getBlock(), machine);
