@@ -1,5 +1,5 @@
 /*
- * game-survival.main
+ * workspace.game-survival.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@
 
 package de.timesnake.game.survival.machines;
 
-import de.timesnake.basic.bukkit.util.exceptions.WorldNotExistException;
+import de.timesnake.basic.bukkit.util.exception.WorldNotExistException;
 import de.timesnake.basic.bukkit.util.file.ExFile;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
