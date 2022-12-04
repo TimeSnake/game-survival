@@ -1,5 +1,5 @@
 /*
- * game-survival.main
+ * workspace.game-survival.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserInventoryClickListener;
 import de.timesnake.game.survival.main.GameSurvival;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -265,7 +266,7 @@ public class Stash extends Machine implements Listener {
 
         public InventoryPage(int number) {
             this.number = number;
-            this.inventory = Server.createExInventory(6 * 9, "Stash", this);
+            this.inventory = new ExInventory(6 * 9, Component.text("Stash"), this);
             Server.getInventoryEventManager().addClickListener(this, this);
         }
 
