@@ -22,10 +22,9 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.exception.WorldNotExistException;
 import de.timesnake.basic.bukkit.util.file.ExFile;
 import de.timesnake.game.survival.chat.Plugin;
+import java.util.Collection;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.InventoryHolder;
-
-import java.util.Collection;
 
 public class MachinesFile extends ExFile {
 
@@ -59,7 +58,6 @@ public class MachinesFile extends ExFile {
             return null;
         }
 
-
         if (type.equals(Machine.Type.HARVESTER)) {
             if (block.getState() instanceof InventoryHolder) {
                 return new Harvester(id, block);
@@ -69,7 +67,8 @@ public class MachinesFile extends ExFile {
             }
         } else if (type.equals(Machine.Type.STASH)) {
             StashFile stashFile = new StashFile(id);
-            Stash stash = new Stash(id, block, stashFile.getStashOwnerId());
+            Stash stash = new Stash(id, block, stashFile.getStashOwnerId(),
+                    stashFile.getStashMembers());
             stashFile.getStashItems().forEach(stash::addItem);
             stash.updateInventories();
             return stash;
@@ -91,7 +90,8 @@ public class MachinesFile extends ExFile {
             StashFile stashFile = new StashFile(id);
             stashFile.delete();
             stashFile.create();
-            stashFile.saveStash(stash.getBlock(), stash.getOwner(), stash.getMembers(), stash.getItems());
+            stashFile.saveStash(stash.getBlock(), stash.getOwner(), stash.getMembers(),
+                    stash.getItems());
         }
         Server.printText(Plugin.MACHINES, "Saved machine " + id + " to file");
         super.save();
