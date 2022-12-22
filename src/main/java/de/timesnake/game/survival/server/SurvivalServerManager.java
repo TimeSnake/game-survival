@@ -1,5 +1,5 @@
 /*
- * game-survival.main
+ * workspace.game-survival.main
  * Copyright (C) 2022 timesnake
  *
  * This program is free software; you can redistribute it and/or
@@ -18,6 +18,7 @@
 
 package de.timesnake.game.survival.server;
 
+import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.game.survival.machines.MachineManager;
 import de.timesnake.game.survival.player.SurvivalUser;
@@ -39,6 +40,8 @@ public class SurvivalServerManager extends ServerManager implements Listener {
     public void onSurvivalEnable() {
         this.machineManager = new MachineManager();
         survivalSpawn = Bukkit.getWorld("world").getSpawnLocation();
+
+        Server.setPvP(false);
 
         //Server.registerListener(privateBlockManger, GameSurvival.getPlugin());
     }

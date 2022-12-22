@@ -27,6 +27,10 @@ import de.timesnake.basic.bukkit.util.user.event.UserInventoryInteractListener;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.main.GameSurvival;
 import de.timesnake.library.basic.util.chat.ExTextColor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -39,10 +43,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 
 public class MachineManager implements Listener, UserInventoryInteractListener {
 
@@ -120,13 +120,15 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
         } else if (Stash.ITEM.equals(item)) {
             if (this.machineByBlockByType.get(Machine.Type.STASH).values().stream().map(
                     s -> ((Stash) s).getOwner()).toList().contains(user.getUniqueId())) {
-                user.sendPluginMessage(Plugin.SURVIVAL, Component.text("You have already a stash", ExTextColor.WARNING));
+                user.sendPluginMessage(Plugin.SURVIVAL,
+                        Component.text("You have already a stash", ExTextColor.WARNING));
                 e.setCancelled(true);
                 e.setBuild(false);
                 return;
             }
 
-            Stash stash = new Stash(this.getNewId(), block, e.getPlayer().getUniqueId());
+            Stash stash = new Stash(this.getNewId(), block, e.getPlayer().getUniqueId(),
+                    new LinkedList<>());
             this.machineByBlockByType.get(Machine.Type.STASH).put(block, stash);
             this.usedIds.add(stash.getId());
             Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
@@ -141,7 +143,8 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
         Sender sender = user.asSender(Plugin.SURVIVAL);
 
         if (this.machineByBlockByType.get(Machine.Type.HARVESTER).containsKey(block)) {
-            Harvester harv = (Harvester) this.machineByBlockByType.get(Machine.Type.HARVESTER).remove(block);
+            Harvester harv = (Harvester) this.machineByBlockByType.get(Machine.Type.HARVESTER)
+                    .remove(block);
             this.file.removeMachine(harv);
             this.usedIds.remove(harv.getId());
             e.setDropItems(false);
@@ -157,17 +160,20 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
                     this.usedIds.remove(stash.getId());
                     e.setDropItems(false);
                     Server.dropItem(block.getLocation(), Stash.ITEM);
-                    sender.sendPluginMessage(Component.text("Stash destroyed", ExTextColor.PERSONAL));
+                    sender.sendPluginMessage(
+                            Component.text("Stash destroyed", ExTextColor.PERSONAL));
                 } else {
                     e.setDropItems(false);
                     e.setCancelled(true);
-                    sender.sendPluginMessage(Component.text("This is not your stash", ExTextColor.WARNING));
+                    sender.sendPluginMessage(
+                            Component.text("This is not your stash", ExTextColor.WARNING));
                 }
             } else {
                 e.setDropItems(false);
                 e.setCancelled(true);
-                sender.sendPluginMessage(Component.text("Stash must be empty before it can be destroyed",
-                        ExTextColor.WARNING));
+                sender.sendPluginMessage(
+                        Component.text("Stash must be empty before it can be destroyed",
+                                ExTextColor.WARNING));
             }
         }
     }
@@ -201,11 +207,13 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
         User user = Server.getUser(e.getPlayer());
 
         if (stash != null && !e.getPlayer().isSneaking()) {
-            if (stash.getOwner().equals(user.getUniqueId()) || stash.getMembers().contains(user.getUniqueId())) {
+            if (stash.getOwner().equals(user.getUniqueId()) || stash.getMembers()
+                    .contains(user.getUniqueId())) {
                 stash.openInventoryFor(user);
                 e.setCancelled(true);
             } else {
-                user.sendPluginMessage(Plugin.SURVIVAL, Component.text("Access denied", ExTextColor.WARNING));
+                user.sendPluginMessage(Plugin.SURVIVAL,
+                        Component.text("Access denied", ExTextColor.WARNING));
             }
         }
     }
