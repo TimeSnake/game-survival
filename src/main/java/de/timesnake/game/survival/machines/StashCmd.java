@@ -16,17 +16,17 @@ import de.timesnake.library.extension.util.chat.Chat;
 import de.timesnake.library.extension.util.chat.Code;
 import de.timesnake.library.extension.util.cmd.Arguments;
 import de.timesnake.library.extension.util.cmd.ExCommand;
-import net.kyori.adventure.text.Component;
-
 import java.util.List;
 import java.util.Optional;
+import net.kyori.adventure.text.Component;
 
 public class StashCmd implements CommandListener {
 
-    private Code.Permission perm;
+    private Code perm;
 
     @Override
-    public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
+    public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
+            Arguments<Argument> args) {
         if (!sender.hasPermission(this.perm)) {
             return;
         }
@@ -37,12 +37,15 @@ public class StashCmd implements CommandListener {
 
         User user = sender.getUser();
 
-        Optional<Machine> stashOptional = SurvivalServer.getMachineManager().getMachineByBlockByType().get(Machine.Type.STASH)
-                .values().stream().filter(s -> ((Stash) s).getOwner().equals(user.getUniqueId())).findFirst();
+        Optional<Machine> stashOptional = SurvivalServer.getMachineManager()
+                .getMachineByBlockByType().get(Machine.Type.STASH)
+                .values().stream().filter(s -> ((Stash) s).getOwner().equals(user.getUniqueId()))
+                .findFirst();
 
         if (stashOptional.isEmpty()) {
             sender.sendPluginMessage(Component.text("No stash found ", ExTextColor.WARNING)
-                    .append(Chat.getMessageCode("H", 1908, Plugin.SURVIVAL).color(ExTextColor.WARNING)));
+                    .append(Chat.getMessageCode("H", 1908, Plugin.SURVIVAL)
+                            .color(ExTextColor.WARNING)));
             return;
         }
 
@@ -63,7 +66,8 @@ public class StashCmd implements CommandListener {
                 if (stash.getMembers().contains(member.getUniqueId())) {
                     sender.sendPluginMessage(Component.text("Player ", ExTextColor.WARNING)
                             .append(member.getChatNameComponent())
-                            .append(Component.text(" is already a stash member", ExTextColor.WARNING)));
+                            .append(Component.text(" is already a stash member",
+                                    ExTextColor.WARNING)));
                     return;
                 }
 
@@ -89,7 +93,8 @@ public class StashCmd implements CommandListener {
     }
 
     @Override
-    public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
+    public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd,
+            Arguments<Argument> args) {
         if (args.length() == 1) {
             return List.of("addmember", "removemember");
         } else if (args.length() == 2) {
@@ -100,6 +105,6 @@ public class StashCmd implements CommandListener {
 
     @Override
     public void loadCodes(de.timesnake.library.extension.util.chat.Plugin plugin) {
-        this.perm = plugin.createPermssionCode("sur", "survival.stash");
+        this.perm = plugin.createPermssionCode("survival.stash");
     }
 }
