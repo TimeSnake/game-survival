@@ -4,7 +4,7 @@
 
 package de.timesnake.game.survival.machines;
 
-import de.timesnake.basic.bukkit.util.user.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.game.survival.main.GameSurvival;
 import org.bukkit.*;
 import org.bukkit.block.Block;
