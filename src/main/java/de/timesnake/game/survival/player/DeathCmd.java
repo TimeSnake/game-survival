@@ -9,7 +9,7 @@ import de.timesnake.basic.bukkit.util.chat.Argument;
 import de.timesnake.basic.bukkit.util.chat.CommandListener;
 import de.timesnake.basic.bukkit.util.chat.Sender;
 import de.timesnake.game.survival.chat.Plugin;
-import de.timesnake.library.basic.util.chat.ExTextColor;
+import de.timesnake.library.chat.ExTextColor;
 import de.timesnake.library.extension.util.chat.Chat;
 import de.timesnake.library.extension.util.chat.Code;
 import de.timesnake.library.extension.util.cmd.Arguments;
@@ -30,7 +30,7 @@ public class DeathCmd implements Listener, CommandListener {
                 .append(Server.getUser(e.getEntity()).getChatNameComponent())
                 .append(Component.text(" died", ExTextColor.WARNING)));
         Server.getUser(e.getEntity()).asSender(Plugin.SURVIVAL)
-                .sendMessageCommandHelp("Teleport to death-point",
+                .sendTDMessageCommandHelp("Teleport to death-point",
                         "back");
         ((SurvivalUser) Server.getUser(e.getEntity())).setDeathLocation(
                 e.getEntity().getLocation());

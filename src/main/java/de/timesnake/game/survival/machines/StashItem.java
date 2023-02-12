@@ -5,7 +5,7 @@
 package de.timesnake.game.survival.machines;
 
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.library.basic.util.chat.ChatColor;
+import de.timesnake.library.chat.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
