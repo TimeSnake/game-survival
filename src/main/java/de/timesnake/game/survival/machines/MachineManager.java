@@ -6,12 +6,13 @@ package de.timesnake.game.survival.machines;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.chat.Sender;
-import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.User;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractListener;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.main.GameSurvival;
+import de.timesnake.library.basic.util.Loggers;
 import de.timesnake.library.chat.ExTextColor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +46,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
         Harvester.loadRecipe();
         Crafter.loadRecipe();
         Stash.loadRecipe();
-        Server.printText(Plugin.SURVIVAL, "Loaded machine recipes");
+        Loggers.SURVIVAL.info("Loaded machine recipes");
 
         Collection<Integer> ids = this.file.getMachineIds();
         this.usedIds.addAll(ids);
@@ -57,19 +58,19 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
         for (Integer id : ids) {
             Machine machine = this.file.getMachine(id);
             if (machine == null) {
-                Server.printWarning(Plugin.MACHINES, "Can not load machine: " + id + " (null)");
+                Loggers.SURVIVAL.warning("Can not load machine: " + id + " (null)");
                 continue;
             }
             this.machineByBlockByType.get(machine.getType()).put(machine.getBlock(), machine);
         }
 
-        Server.printText(Plugin.MACHINES, "Loaded machines");
+        Loggers.SURVIVAL.info("Loaded machines");
     }
 
     public void saveMachinesToFile() {
         this.file.resetMachines();
         this.machineByBlockByType.values().forEach(m -> m.values().forEach(this.file::addMachine));
-        Server.printText(Plugin.SURVIVAL, "Saved machines to file");
+        Loggers.SURVIVAL.info("Saved machines to file");
     }
 
     @EventHandler
