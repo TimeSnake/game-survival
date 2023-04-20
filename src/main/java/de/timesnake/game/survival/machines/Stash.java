@@ -5,11 +5,13 @@
 package de.timesnake.game.survival.machines;
 
 import de.timesnake.basic.bukkit.util.Server;
+import de.timesnake.basic.bukkit.util.user.User;
+import de.timesnake.basic.bukkit.util.user.event.UserBlockPlaceEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
+import de.timesnake.basic.bukkit.util.world.ExBlock;
 import de.timesnake.game.survival.main.GameSurvival;
 import java.util.Collection;
 import java.util.Comparator;
@@ -25,6 +27,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -33,6 +36,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -66,15 +70,25 @@ public class Stash extends Machine implements Listener {
         return item.asOne().hashCode();
     }
 
-    private static final ExItemStack UP = new ExItemStack(Material.DETECTOR_RAIL, "§9Up").setSlot(0)
+    private static final ExItemStack UP = new ExItemStack(Material.DETECTOR_RAIL, "§9Up")
+            .setSlot(8)
             .immutable();
-    private static final ExItemStack PAGE = new ExItemStack(Material.PAPER, "§9Page 0").setSlot(9);
-    private static final ExItemStack DOWN = new ExItemStack(Material.DETECTOR_RAIL,
-            "§9Down").setSlot(18).immutable();
-    private static final ExItemStack ORDER = new ExItemStack(Material.SPYGLASS, "§9Order").setSlot(
-            36);
-    private static final ExItemStack SEARCH = new ExItemStack(Material.NAME_TAG,
-            "§9Search").setLore("§7Coming soon").setSlot(45).immutable();
+
+    private static final ExItemStack PAGE = new ExItemStack(Material.PAPER, "§9Page 0")
+            .setSlot(17);
+
+    private static final ExItemStack DOWN = new ExItemStack(Material.DETECTOR_RAIL, "§9Down")
+            .setSlot(26)
+            .immutable();
+
+    private static final ExItemStack ORDER = new ExItemStack(Material.SPYGLASS, "§9Order")
+            .setSlot(35);
+
+    private static final ExItemStack SEARCH = new ExItemStack(Material.NAME_TAG, "§9Search")
+            .setLore("§7Coming soon")
+            .setSlot(53)
+            .immutable();
+
     private final UUID owner;
     private final List<UUID> members;
     private final Map<Integer, InventoryPage> pageByNumber = new HashMap<>();
@@ -83,7 +97,7 @@ public class Stash extends Machine implements Listener {
     private final Map<Integer, StashItem> stashItemByItemHash = new HashMap<>();
     private int maxPage = 0;
 
-    private OrderType orderType = OrderType.NUMBER;
+    private OrderType orderType = OrderType.AMOUNT;
     private final ExItemStack orderItem = ORDER.cloneWithId()
             .setLore("§7" + this.orderType.getDisplayName());
 
@@ -108,6 +122,10 @@ public class Stash extends Machine implements Listener {
 
         int slot = 0;
         for (StashItem item : this.stashItemsOrdered) {
+            if (slot % 9 == 7) {
+                slot += 2;
+            }
+
             if (slot >= 6 * 9) {
                 currentPage.update(itemBySlot);
                 itemBySlot = new HashMap<>();
@@ -115,13 +133,6 @@ public class Stash extends Machine implements Listener {
                 slot = 0;
                 currentPage = this.pageByNumber.computeIfAbsent(currentPage.getNumber() + 1,
                         InventoryPage::new);
-            }
-
-            if (slot % 9 == 0) {
-                slot += 2;
-            }
-            if (slot >= 6 * 9) {
-                break;
             }
 
             if (item.isEmpty()) {
@@ -148,17 +159,22 @@ public class Stash extends Machine implements Listener {
         if (item.equals(UP)) {
             if (number > 0) {
                 user.openInventory(this.pageByNumber.get(number - 1).getInventory());
-                user.playSoundItemClicked();
+                user.playSoundItemClickSuccessful();
+            } else {
+                user.playSoundItemClickFailed();
             }
         } else if (item.equals(DOWN)) {
             if (number < this.maxPage) {
                 user.openInventory(this.pageByNumber.get(number + 1).getInventory());
-                user.playSoundItemClicked();
+                user.playSoundItemClickSuccessful();
+            } else {
+                user.playSoundItemClickFailed();
             }
         } else if (item.equals(ORDER)) {
             this.orderType = OrderType.values()[(this.orderType.ordinal() + 1)
                     % OrderType.values().length];
             this.orderItem.setLore("§7" + this.orderType.getDisplayName());
+            user.playSoundItemClickSuccessful();
             this.updateInventories();
         } else if (item.equals(SEARCH)) {
             // TODO search
@@ -185,16 +201,22 @@ public class Stash extends Machine implements Listener {
         user.openInventory(this.pageByNumber.get(0).getInventory());
     }
 
-    public synchronized boolean addItem(ItemStack item) {
-        StashItem stashItem = this.stashItemByItemHash.get(convertItemToKeyItem(item));
+    public synchronized boolean addItem(ItemStack... items) {
+        for (ItemStack item : items) {
+            if (item == null) {
+                continue;
+            }
 
-        if (stashItem != null && !stashItem.isEmpty()) {
-            stashItem.add(item);
-        } else {
-            stashItem = new StashItem(item);
-            this.stashItemsOrdered.add(stashItem);
-            this.stashItemByDisplayItem.put(stashItem.getDisplayItem(), stashItem);
-            this.stashItemByItemHash.put(convertItemToKeyItem(stashItem.getItem()), stashItem);
+            StashItem stashItem = this.stashItemByItemHash.get(convertItemToKeyItem(item));
+
+            if (stashItem != null && !stashItem.isEmpty()) {
+                stashItem.add(item);
+            } else {
+                stashItem = new StashItem(item);
+                this.stashItemsOrdered.add(stashItem);
+                this.stashItemByDisplayItem.put(stashItem.getDisplayItem(), stashItem);
+                this.stashItemByItemHash.put(convertItemToKeyItem(stashItem.getItem()), stashItem);
+            }
         }
         return true;
     }
@@ -239,8 +261,40 @@ public class Stash extends Machine implements Listener {
         }
     }
 
+    @EventHandler
+    public void onBlockPlace(UserBlockPlaceEvent e) {
+        Block block = e.getBlockPlaced();
+
+        if (!(block.getState() instanceof Container container)) {
+            return;
+        }
+
+        if (!new ExBlock(this.block).isBeside(block)) {
+            return;
+        }
+
+        Inventory blockInv = container.getInventory();
+        this.addItem(blockInv.getContents());
+        this.updateInventories();
+        blockInv.clear();
+    }
+
+    @EventHandler
+    public void onInventoryMove(InventoryMoveItemEvent e) {
+        Inventory destination = e.getDestination();
+
+        if (!(destination.getHolder() instanceof Container container)) {
+            return;
+        }
+
+        if (new ExBlock(this.block).isBeside(container.getBlock())) {
+            this.addItem(destination.getContents());
+            destination.clear();
+        }
+    }
+
     public enum OrderType {
-        NUMBER("Number",
+        AMOUNT("Amount",
                 Comparator.comparingInt((StashItem i) -> i.getItem().getAmount()).reversed()),
         NAME("Name", Comparator.comparing(i -> i.getItem().getType().name()));
 
@@ -319,19 +373,19 @@ public class Stash extends Machine implements Listener {
                 boolean result = Stash.this.addItem(itemOnCursor);
                 if (result) {
                     user.setItemOnCursor(new ItemStack(Material.AIR));
-                    user.playSoundItemClicked();
+                    user.playSoundItemClickSuccessful();
                 }
             } else if (action.equals(InventoryAction.PLACE_ONE)) {
                 boolean result = Stash.this.addItem(itemOnCursor.asOne());
                 if (result) {
                     user.setItemOnCursor(itemOnCursor.asQuantity(itemOnCursor.getAmount() - 1));
-                    user.playSoundItemClicked();
+                    user.playSoundItemClickSuccessful();
                 }
             } else if (action.equals(InventoryAction.PLACE_SOME)) {
                 boolean result = Stash.this.addItem(itemOnCursor);
                 if (result) {
                     user.setItemOnCursor(new ItemStack(Material.AIR));
-                    user.playSoundItemClicked();
+                    user.playSoundItemClickSuccessful();
                 }
             } else {
                 StashItem stashItem = Stash.this.stashItemByDisplayItem.get(clickedItem);
@@ -342,12 +396,12 @@ public class Stash extends Machine implements Listener {
                             user.setItemOnCursor(
                                     itemOnCursor.asQuantity(itemOnCursor.getAmount() - 1));
                             Stash.this.addItem(itemOnCursor.asOne());
-                            user.playSoundItemClicked();
+                            user.playSoundItemClickSuccessful();
                         } else if (event.getClickType().equals(ClickType.RIGHT)) {
                             if (itemOnCursor.getAmount() < itemOnCursor.getMaxStackSize()) {
                                 user.setItemOnCursor(
                                         itemOnCursor.add(stashItem.remove(1).getAmount()));
-                                user.playSoundItemClicked();
+                                user.playSoundItemClickSuccessful();
                             }
                         }
                     } else {
@@ -355,26 +409,26 @@ public class Stash extends Machine implements Listener {
                             boolean result = Stash.this.addItem(itemOnCursor);
                             if (result) {
                                 user.setItemOnCursor(new ItemStack(Material.AIR));
-                                user.playSoundItemClicked();
+                                user.playSoundItemClickSuccessful();
                             }
                         } else if (event.getClickType().equals(ClickType.RIGHT)) {
                             user.setItemOnCursor(
                                     itemOnCursor.asQuantity(itemOnCursor.getAmount() - 1));
                             Stash.this.addItem(itemOnCursor.asOne());
-                            user.playSoundItemClicked();
+                            user.playSoundItemClickSuccessful();
                         }
                     }
 
                 } else if (stashItem != null) {
                     if (action.equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                         user.addItem(stashItem.remove(64));
-                        user.playSoundItemClicked();
+                        user.playSoundItemClickSuccessful();
                     } else if (action.equals(InventoryAction.PICKUP_HALF)) {
                         user.setItemOnCursor(stashItem.remove(1).clone());
-                        user.playSoundItemClicked();
+                        user.playSoundItemClickSuccessful();
                     } else if (action.equals(InventoryAction.PICKUP_ALL)) {
                         user.setItemOnCursor(stashItem.remove(64).clone());
-                        user.playSoundItemClicked();
+                        user.playSoundItemClickSuccessful();
                     } else {
                         return;
                     }
