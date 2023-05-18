@@ -10,13 +10,13 @@ import org.bukkit.Location;
 
 public class SurvivalServer extends Server {
 
-    public static MachineManager getMachineManager() {
-        return server.getMachineManager();
-    }
+  public static MachineManager getMachineManager() {
+    return server.getMachineManager();
+  }
 
-    public static Location getSurvivalSpawn() {
-        return server.getSurvivalSpawn();
-    }
+  public static Location getSurvivalSpawn() {
+    return server.getSurvivalSpawn();
+  }
 
-    private static final SurvivalServerManager server = SurvivalServerManager.getInstance();
+  private static final SurvivalServerManager server = SurvivalServerManager.getInstance();
 }

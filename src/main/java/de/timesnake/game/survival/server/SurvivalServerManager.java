@@ -15,38 +15,38 @@ import org.bukkit.event.Listener;
 
 public class SurvivalServerManager extends ServerManager implements Listener {
 
-    public static SurvivalServerManager getInstance() {
-        return (SurvivalServerManager) ServerManager.getInstance();
-    }
+  public static SurvivalServerManager getInstance() {
+    return (SurvivalServerManager) ServerManager.getInstance();
+  }
 
-    private MachineManager machineManager;
+  private MachineManager machineManager;
 
-    private Location survivalSpawn;
+  private Location survivalSpawn;
 
-    public void onSurvivalEnable() {
-        this.machineManager = new MachineManager();
-        survivalSpawn = Bukkit.getWorld("world").getSpawnLocation();
+  public void onSurvivalEnable() {
+    this.machineManager = new MachineManager();
+    survivalSpawn = Bukkit.getWorld("world").getSpawnLocation();
 
-        Server.setPvP(false);
+    Server.setPvP(false);
 
-        //Server.registerListener(privateBlockManger, GameSurvival.getPlugin());
-    }
+    //Server.registerListener(privateBlockManger, GameSurvival.getPlugin());
+  }
 
-    public void onSurvivalDisable() {
-        //privateBlockManger.savePrivateBlocksToFile();
-        machineManager.saveMachinesToFile();
-    }
+  public void onSurvivalDisable() {
+    //privateBlockManger.savePrivateBlocksToFile();
+    machineManager.saveMachinesToFile();
+  }
 
-    @Override
-    public SurvivalUser loadUser(Player player) {
-        return new SurvivalUser(player);
-    }
+  @Override
+  public SurvivalUser loadUser(Player player) {
+    return new SurvivalUser(player);
+  }
 
-    public MachineManager getMachineManager() {
-        return machineManager;
-    }
+  public MachineManager getMachineManager() {
+    return machineManager;
+  }
 
-    public Location getSurvivalSpawn() {
-        return survivalSpawn;
-    }
+  public Location getSurvivalSpawn() {
+    return survivalSpawn;
+  }
 }

@@ -23,44 +23,44 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class GameSurvival extends JavaPlugin {
 
-    public static GameSurvival getPlugin() {
-        return plugin;
-    }
+  public static GameSurvival getPlugin() {
+    return plugin;
+  }
 
-    private static GameSurvival plugin;
+  private static GameSurvival plugin;
 
-    @Override
-    public void onLoad() {
-        ServerManager.setInstance(new SurvivalServerManager());
-    }
+  @Override
+  public void onLoad() {
+    ServerManager.setInstance(new SurvivalServerManager());
+  }
 
-    @Override
-    public void onEnable() {
-        GameSurvival.plugin = this;
+  @Override
+  public void onEnable() {
+    GameSurvival.plugin = this;
 
-        PluginManager pm = Bukkit.getPluginManager();
-        pm.registerEvents(new SpawnProtection(), this);
-        pm.registerEvents(new DeathCmd(), this);
-        pm.registerEvents(SurvivalServerManager.getInstance(), this);
-        pm.registerEvents(new RewardHandler(), this);
+    PluginManager pm = Bukkit.getPluginManager();
+    pm.registerEvents(new SpawnProtection(), this);
+    pm.registerEvents(new DeathCmd(), this);
+    pm.registerEvents(SurvivalServerManager.getInstance(), this);
+    pm.registerEvents(new RewardHandler(), this);
 
-        //Server.getCommandManager().addCommand(this, "private", List.of("pv"), new PrivateCmd(),
-        //		Plugin.PRIVATE_BLOCKS);
-        Server.getCommandManager().addCommand(this, "back", new DeathCmd(), Plugin.SURVIVAL);
-        Server.getCommandManager()
-                .addCommand(this, "survivalspawn", List.of("spawnsurvival", "sspawn"),
-                        new SurvivalSpawnCmd(), Plugin.SURVIVAL);
+    //Server.getCommandManager().addCommand(this, "private", List.of("pv"), new PrivateCmd(),
+    //		Plugin.PRIVATE_BLOCKS);
+    Server.getCommandManager().addCommand(this, "back", new DeathCmd(), Plugin.SURVIVAL);
+    Server.getCommandManager()
+        .addCommand(this, "survivalspawn", List.of("spawnsurvival", "sspawn"),
+            new SurvivalSpawnCmd(), Plugin.SURVIVAL);
 
-        Server.getCommandManager().addCommand(this, "stash", new StashCmd(), Plugin.SURVIVAL);
+    Server.getCommandManager().addCommand(this, "stash", new StashCmd(), Plugin.SURVIVAL);
 
-        Database.getServers().getServer(Type.Server.GAME, Bukkit.getPort()).setTask("survival");
+    Database.getServers().getServer(Type.Server.GAME, Bukkit.getPort()).setTask("survival");
 
-        SurvivalServerManager.getInstance().onSurvivalEnable();
-    }
+    SurvivalServerManager.getInstance().onSurvivalEnable();
+  }
 
-    @Override
-    public void onDisable() {
-        SurvivalServerManager.getInstance().onSurvivalDisable();
-    }
+  @Override
+  public void onDisable() {
+    SurvivalServerManager.getInstance().onSurvivalDisable();
+  }
 
 }
