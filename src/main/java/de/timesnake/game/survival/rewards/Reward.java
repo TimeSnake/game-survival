@@ -8,9 +8,9 @@ import org.bukkit.inventory.ItemStack;
 
 public interface Reward {
 
-    String getName();
+  String getName();
 
-    int getGoal();
+  int getGoal();
 
-    ItemStack[] getPrizes();
+  ItemStack[] getPrizes();
 }

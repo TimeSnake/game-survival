@@ -9,29 +9,29 @@ import org.bukkit.block.Block;
 
 public abstract class Machine {
 
-    protected final Integer id;
-    protected final Block block;
+  protected final Integer id;
+  protected final Block block;
 
-    public Machine(Integer id, Block block) {
-        this.id = id;
-        this.block = block;
-    }
+  public Machine(Integer id, Block block) {
+    this.id = id;
+    this.block = block;
+  }
 
-    public Integer getId() {
-        return id;
-    }
+  public Integer getId() {
+    return id;
+  }
 
-    public Block getBlock() {
-        return block;
-    }
+  public Block getBlock() {
+    return block;
+  }
 
-    public abstract Machine.Type getType();
+  public abstract Machine.Type getType();
 
-    public enum Type {
-        HARVESTER,
-        MINER,
-        STASH;
-    }
+  public enum Type {
+    HARVESTER,
+    MINER,
+    STASH;
+  }
 
 
 }

@@ -11,38 +11,38 @@ import org.bukkit.entity.Player;
 
 public class SurvivalUser extends User {
 
-    private Block selectedBlock;
-    private Location deathLocation;
+  private Block selectedBlock;
+  private Location deathLocation;
 
-    public SurvivalUser(Player player) {
-        super(player);
-    }
+  public SurvivalUser(Player player) {
+    super(player);
+  }
 
-    public Block getSelectedBlock() {
-        return selectedBlock;
-    }
+  public Block getSelectedBlock() {
+    return selectedBlock;
+  }
 
-    public void setSelectedBlock(Block block) {
-        this.selectedBlock = block;
-    }
+  public void setSelectedBlock(Block block) {
+    this.selectedBlock = block;
+  }
 
-    public boolean hasBlockSelected() {
-        if (this.selectedBlock != null) {
-            return true;
-        }
-        return false;
+  public boolean hasBlockSelected() {
+    if (this.selectedBlock != null) {
+      return true;
     }
+    return false;
+  }
 
-    public void resetSelectedBlock() {
-        this.selectedBlock = null;
-    }
+  public void resetSelectedBlock() {
+    this.selectedBlock = null;
+  }
 
-    public Location getDeathLocation() {
-        return deathLocation;
-    }
+  public Location getDeathLocation() {
+    return deathLocation;
+  }
 
-    public void setDeathLocation(Location deathLocation) {
-        this.deathLocation = deathLocation;
-    }
+  public void setDeathLocation(Location deathLocation) {
+    this.deathLocation = deathLocation;
+  }
 
 }

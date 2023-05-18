@@ -16,22 +16,22 @@ import org.bukkit.event.player.PlayerStatisticIncrementEvent;
 
 public class RewardHandler implements Listener {
 
-    @EventHandler
-    public void onStatisticIncrementEvent(PlayerStatisticIncrementEvent e) {
-        Statistic stat = e.getStatistic();
-        for (StatisticReward reward : StatisticReward.values()) {
-            if (!stat.equals(reward.getType())) {
-                continue;
-            }
-            if (e.getNewValue() != reward.getGoal()) {
-                continue;
-            }
+  @EventHandler
+  public void onStatisticIncrementEvent(PlayerStatisticIncrementEvent e) {
+    Statistic stat = e.getStatistic();
+    for (StatisticReward reward : StatisticReward.values()) {
+      if (!stat.equals(reward.getType())) {
+        continue;
+      }
+      if (e.getNewValue() != reward.getGoal()) {
+        continue;
+      }
 
-            User user = Server.getUser(e.getPlayer());
-            Server.broadcastMessage(Plugin.REWARDS, user.getChatNameComponent()
-                    .append(Component.text(" gained the reward: ", ExTextColor.PUBLIC))
-                    .append(Component.text(reward.getName(), ExTextColor.VALUE)));
-            user.addItem(reward.getPrizes());
-        }
+      User user = Server.getUser(e.getPlayer());
+      Server.broadcastMessage(Plugin.REWARDS, user.getChatNameComponent()
+          .append(Component.text(" gained the reward: ", ExTextColor.PUBLIC))
+          .append(Component.text(reward.getName(), ExTextColor.VALUE)));
+      user.addItem(reward.getPrizes());
     }
+  }
 }
