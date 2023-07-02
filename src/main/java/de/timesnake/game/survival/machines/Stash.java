@@ -7,21 +7,10 @@ package de.timesnake.game.survival.machines;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserBlockPlaceEvent;
-import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
-import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
-import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
+import de.timesnake.basic.bukkit.util.user.inventory.*;
 import de.timesnake.basic.bukkit.util.world.ExBlock;
 import de.timesnake.game.survival.main.GameSurvival;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import de.timesnake.library.basic.util.Loggers;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -32,16 +21,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
 
 public class Stash extends Machine implements Listener {
 
@@ -212,10 +199,15 @@ public class Stash extends Machine implements Listener {
       if (stashItem != null && !stashItem.isEmpty()) {
         stashItem.add(item);
       } else {
-        stashItem = new StashItem(item);
-        this.stashItemsOrdered.add(stashItem);
-        this.stashItemByDisplayItem.put(stashItem.getDisplayItem(), stashItem);
-        this.stashItemByItemHash.put(convertItemToKeyItem(stashItem.getItem()), stashItem);
+        try {
+          stashItem = new StashItem(item);
+          this.stashItemsOrdered.add(stashItem);
+          this.stashItemByDisplayItem.put(stashItem.getDisplayItem(), stashItem);
+          this.stashItemByItemHash.put(convertItemToKeyItem(stashItem.getItem()), stashItem);
+        } catch (InvalidItemTypeException e) {
+          Loggers.SURVIVAL.warning("Unable to load item '" + item.getType().getKey().getKey() + "'");
+        }
+
       }
     }
     return true;
