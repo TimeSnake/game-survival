@@ -14,11 +14,12 @@ import de.timesnake.library.extension.util.chat.Chat;
 import de.timesnake.library.extension.util.chat.Code;
 import de.timesnake.library.extension.util.cmd.Arguments;
 import de.timesnake.library.extension.util.cmd.ExCommand;
-import java.util.List;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+
+import java.util.List;
 
 public class DeathCmd implements Listener, CommandListener {
 
@@ -29,16 +30,13 @@ public class DeathCmd implements Listener, CommandListener {
     e.deathMessage(Chat.getSenderPlugin(Plugin.SURVIVAL)
         .append(Server.getUser(e.getEntity()).getChatNameComponent())
         .append(Component.text(" died", ExTextColor.WARNING)));
-    Server.getUser(e.getEntity()).asSender(Plugin.SURVIVAL)
-        .sendTDMessageCommandHelp("Teleport to death-point",
-            "back");
-    ((SurvivalUser) Server.getUser(e.getEntity())).setDeathLocation(
-        e.getEntity().getLocation());
+    Server.getUser(e.getEntity()).asSender(Plugin.SURVIVAL).sendTDMessageCommandHelp("Teleport to death-point", "back");
+    ((SurvivalUser) Server.getUser(e.getEntity())).setDeathLocation(e.getEntity().getLocation());
   }
 
   @Override
   public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
-      Arguments<Argument> args) {
+                        Arguments<Argument> args) {
     if (sender.hasPermission(this.perm)) {
       if (sender.isPlayer(true)) {
         SurvivalUser user = (SurvivalUser) Server.getUser(sender.getPlayer());
@@ -56,7 +54,7 @@ public class DeathCmd implements Listener, CommandListener {
 
   @Override
   public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd,
-      Arguments<Argument> args) {
+                                       Arguments<Argument> args) {
     return null;
   }
 
