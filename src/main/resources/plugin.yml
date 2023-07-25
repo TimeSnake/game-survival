@@ -13,3 +13,6 @@ commands:
   spawnsurvival:
   sspawn:
   stash:
+  tprandom:
+  tprand:
+  randomtp:

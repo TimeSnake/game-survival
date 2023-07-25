@@ -11,14 +11,16 @@ import de.timesnake.database.util.object.Type;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.machines.StashCmd;
 import de.timesnake.game.survival.player.DeathCmd;
+import de.timesnake.game.survival.player.RandomTpCmd;
 import de.timesnake.game.survival.player.SurvivalSpawnCmd;
 import de.timesnake.game.survival.rewards.RewardHandler;
 import de.timesnake.game.survival.server.SurvivalServerManager;
 import de.timesnake.game.survival.world.SpawnProtection;
-import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
 
 
 public class GameSurvival extends JavaPlugin {
@@ -44,14 +46,14 @@ public class GameSurvival extends JavaPlugin {
     pm.registerEvents(SurvivalServerManager.getInstance(), this);
     pm.registerEvents(new RewardHandler(), this);
 
-    //Server.getCommandManager().addCommand(this, "private", List.of("pv"), new PrivateCmd(),
-    //		Plugin.PRIVATE_BLOCKS);
     Server.getCommandManager().addCommand(this, "back", new DeathCmd(), Plugin.SURVIVAL);
-    Server.getCommandManager()
-        .addCommand(this, "survivalspawn", List.of("spawnsurvival", "sspawn"),
-            new SurvivalSpawnCmd(), Plugin.SURVIVAL);
+    Server.getCommandManager().addCommand(this, "survivalspawn", List.of("spawnsurvival", "sspawn"),
+        new SurvivalSpawnCmd(), Plugin.SURVIVAL);
 
     Server.getCommandManager().addCommand(this, "stash", new StashCmd(), Plugin.SURVIVAL);
+
+    Server.getCommandManager().addCommand(this, "tprandom", List.of("tprand", "randomtp"),
+        new RandomTpCmd(), Plugin.SURVIVAL);
 
     Database.getServers().getServer(Type.Server.GAME, Bukkit.getPort()).setTask("survival");
 
