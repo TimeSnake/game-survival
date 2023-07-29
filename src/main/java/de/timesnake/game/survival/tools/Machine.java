@@ -2,7 +2,7 @@
  * Copyright (C) 2023 timesnake
  */
 
-package de.timesnake.game.survival.machines;
+package de.timesnake.game.survival.tools;
 
 
 import org.bukkit.block.Block;
@@ -30,7 +30,8 @@ public abstract class Machine {
   public enum Type {
     HARVESTER,
     MINER,
-    STASH;
+    STASH,
+    MAGNET;
   }
 
 

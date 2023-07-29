@@ -2,7 +2,7 @@
  * Copyright (C) 2023 timesnake
  */
 
-package de.timesnake.game.survival.machines;
+package de.timesnake.game.survival.tools;
 
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.game.survival.main.GameSurvival;
@@ -26,7 +26,7 @@ public class Harvester extends Machine implements Listener {
 
   public static final String NAME = "§rHarvester";
   public static final ExItemStack ITEM = ExItemStack.getHashedIdItem(Material.DROPPER, "harvester")
-      .setDisplayName(NAME).setLore("§7Harvester", "§7Harvests trees automatic").immutable();
+      .setDisplayName(NAME).setLore("§7Harvester", "§7Harvests trees automatically").immutable();
   public static final Integer RADIUS = 5;
 
   public static void loadRecipe() {
@@ -58,7 +58,7 @@ public class Harvester extends Machine implements Listener {
     return Type.HARVESTER;
   }
 
-  boolean isInRange(Location loc) {
+  public boolean isInRange(Location loc) {
     int xDiff = this.block.getX() - loc.getBlockX();
     int yDiff = this.block.getY() - loc.getBlockY();
     int zDiff = this.block.getZ() - loc.getBlockZ();
@@ -66,7 +66,7 @@ public class Harvester extends Machine implements Listener {
     return (xDiff < RADIUS && xDiff > -RADIUS) && yDiff == 0 && (zDiff < RADIUS && zDiff > -RADIUS);
   }
 
-  void fellTree() {
+  public void fellTree() {
 
     if (task != null) {
       task.cancel();

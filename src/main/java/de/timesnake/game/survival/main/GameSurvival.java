@@ -9,7 +9,7 @@ import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.object.Type;
 import de.timesnake.game.survival.chat.Plugin;
-import de.timesnake.game.survival.machines.StashCmd;
+import de.timesnake.game.survival.tools.StashCmd;
 import de.timesnake.game.survival.player.DeathCmd;
 import de.timesnake.game.survival.player.RandomTpCmd;
 import de.timesnake.game.survival.player.SurvivalSpawnCmd;
