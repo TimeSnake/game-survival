@@ -6,7 +6,7 @@ package de.timesnake.game.survival.server;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
-import de.timesnake.game.survival.machines.MachineManager;
+import de.timesnake.game.survival.tools.MachineManager;
 import de.timesnake.game.survival.player.SurvivalUser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

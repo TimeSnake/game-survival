@@ -5,7 +5,7 @@
 package de.timesnake.game.survival.server;
 
 import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.game.survival.machines.MachineManager;
+import de.timesnake.game.survival.tools.MachineManager;
 import org.bukkit.Location;
 
 public class SurvivalServer extends Server {

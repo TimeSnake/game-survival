@@ -2,7 +2,7 @@
  * Copyright (C) 2023 timesnake
  */
 
-package de.timesnake.game.survival.machines;
+package de.timesnake.game.survival.tools;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.chat.Sender;
@@ -14,22 +14,22 @@ import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.main.GameSurvival;
 import de.timesnake.library.basic.util.Loggers;
 import de.timesnake.library.chat.ExTextColor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
+
+import java.util.*;
+
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 public class MachineManager implements Listener, UserInventoryInteractListener {
 
@@ -46,6 +46,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
     Harvester.loadRecipe();
     Crafter.loadRecipe();
     Stash.loadRecipe();
+    ItemMagnet.loadRecipe();
     Loggers.SURVIVAL.info("Loaded machine recipes");
 
     Collection<Integer> ids = this.file.getMachineIds();
@@ -225,6 +226,32 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
           e.setCancelled(true);
           return;
         }
+      }
+    }
+  }
+
+  @EventHandler
+  public void onItemDrop(BlockDropItemEvent e) {
+    this.handleItemDrop(e.getBlock().getLocation(), e.getItems());
+  }
+
+  @EventHandler
+  public void onItemDrop(EntityDropItemEvent e) {
+    this.handleItemDrop(e.getItemDrop().getLocation(), List.of(e.getItemDrop()));
+  }
+
+  private void handleItemDrop(Location location, List<Item> items) {
+    for (Player p : location.getNearbyPlayers(ItemMagnet.RADIUS_XZ, ItemMagnet.RADIUS_Y)) {
+      User user = Server.getUser(p);
+      if (user.contains(ItemMagnet.ITEM)) {
+        Vector v = user.getLocation().toVector().subtract(location.toVector()).normalize().multiply(0.3);
+        items.forEach(i -> i.setVelocity(v));
+        Server.runTaskLaterSynchrony(() -> items.forEach(i -> {
+          if (!i.isDead()) {
+            i.setVelocity(v);
+          }
+        }), 5, GameSurvival.getPlugin());
+
       }
     }
   }

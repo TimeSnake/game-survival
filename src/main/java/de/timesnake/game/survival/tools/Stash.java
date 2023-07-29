@@ -2,7 +2,7 @@
  * Copyright (C) 2023 timesnake
  */
 
-package de.timesnake.game.survival.machines;
+package de.timesnake.game.survival.tools;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
@@ -385,14 +385,12 @@ public class Stash extends Machine implements Listener {
         if (action.equals(InventoryAction.SWAP_WITH_CURSOR)) {
           if (stashItem.stackable(itemOnCursor)) {
             if (event.getClickType().equals(ClickType.LEFT)) {
-              user.setItemOnCursor(
-                  itemOnCursor.asQuantity(itemOnCursor.getAmount() - 1));
+              user.setItemOnCursor(itemOnCursor.asQuantity(itemOnCursor.getAmount() - 1));
               Stash.this.addItem(itemOnCursor.asOne());
               user.playSoundItemClickSuccessful();
             } else if (event.getClickType().equals(ClickType.RIGHT)) {
               if (itemOnCursor.getAmount() < itemOnCursor.getMaxStackSize()) {
-                user.setItemOnCursor(
-                    itemOnCursor.add(stashItem.remove(1).getAmount()));
+                user.setItemOnCursor(itemOnCursor.add(stashItem.remove(1).getAmount()));
                 user.playSoundItemClickSuccessful();
               }
             }
@@ -404,8 +402,7 @@ public class Stash extends Machine implements Listener {
                 user.playSoundItemClickSuccessful();
               }
             } else if (event.getClickType().equals(ClickType.RIGHT)) {
-              user.setItemOnCursor(
-                  itemOnCursor.asQuantity(itemOnCursor.getAmount() - 1));
+              user.setItemOnCursor(itemOnCursor.asQuantity(itemOnCursor.getAmount() - 1));
               Stash.this.addItem(itemOnCursor.asOne());
               user.playSoundItemClickSuccessful();
             }
@@ -413,8 +410,12 @@ public class Stash extends Machine implements Listener {
 
         } else if (stashItem != null) {
           if (action.equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-            user.addItem(stashItem.remove(64));
-            user.playSoundItemClickSuccessful();
+            if (user.getInventory().firstEmpty() != -1) {
+              user.addItem(stashItem.remove(64));
+              user.playSoundItemClickSuccessful();
+            } else {
+              user.playSoundItemClickFailed();
+            }
           } else if (action.equals(InventoryAction.PICKUP_HALF)) {
             user.setItemOnCursor(stashItem.remove(1).clone());
             user.playSoundItemClickSuccessful();
