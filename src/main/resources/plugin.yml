@@ -1,5 +1,5 @@
 main: de.timesnake.game.survival.main.GameSurvival
-version: 1.0
+version: 1.1
 name: game-survival
 author: Mn
 depend: [ basic-bukkit ]
