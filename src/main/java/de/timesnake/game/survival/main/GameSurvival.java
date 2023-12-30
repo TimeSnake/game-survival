@@ -7,15 +7,16 @@ package de.timesnake.game.survival.main;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.database.util.Database;
-import de.timesnake.database.util.object.Type;
+import de.timesnake.database.util.server.DbTmpGameServer;
 import de.timesnake.game.survival.chat.Plugin;
-import de.timesnake.game.survival.tools.StashCmd;
 import de.timesnake.game.survival.player.DeathCmd;
 import de.timesnake.game.survival.player.RandomTpCmd;
 import de.timesnake.game.survival.player.SurvivalSpawnCmd;
 import de.timesnake.game.survival.rewards.RewardHandler;
 import de.timesnake.game.survival.server.SurvivalServerManager;
+import de.timesnake.game.survival.tools.StashCmd;
 import de.timesnake.game.survival.world.SpawnProtection;
+import de.timesnake.library.basic.util.ServerType;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,7 +56,7 @@ public class GameSurvival extends JavaPlugin {
     Server.getCommandManager().addCommand(this, "tprandom", List.of("tprand", "randomtp"),
         new RandomTpCmd(), Plugin.SURVIVAL);
 
-    Database.getServers().getServer(Type.Server.GAME, Bukkit.getPort()).setTask("survival");
+    ((DbTmpGameServer) Database.getServers().getServer(ServerType.GAME, Bukkit.getPort())).setTask("survival");
 
     SurvivalServerManager.getInstance().onSurvivalEnable();
   }
