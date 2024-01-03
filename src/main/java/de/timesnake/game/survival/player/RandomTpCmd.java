@@ -4,22 +4,26 @@
 
 package de.timesnake.game.survival.player;
 
-import de.timesnake.basic.bukkit.util.chat.Argument;
-import de.timesnake.basic.bukkit.util.chat.CommandListener;
-import de.timesnake.basic.bukkit.util.chat.Sender;
+import de.timesnake.basic.bukkit.util.chat.cmd.Argument;
+import de.timesnake.basic.bukkit.util.chat.cmd.CommandListener;
+import de.timesnake.basic.bukkit.util.chat.cmd.Completion;
+import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.server.SurvivalServer;
+import de.timesnake.library.commands.PluginCommand;
+import de.timesnake.library.commands.simple.Arguments;
 import de.timesnake.library.extension.util.chat.Chat;
 import de.timesnake.library.extension.util.chat.Code;
-import de.timesnake.library.extension.util.cmd.Arguments;
-import de.timesnake.library.extension.util.cmd.ExCommand;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 public class RandomTpCmd implements CommandListener {
 
@@ -29,7 +33,7 @@ public class RandomTpCmd implements CommandListener {
   private final Map<UUID, LocalDateTime> cooldownUsers = new HashMap<>();
   private final Random random = new Random();
 
-  private final Code permCode = new Code.Builder()
+  private final Code perm = new Code.Builder()
       .setPlugin(Plugin.SURVIVAL)
       .setType(Code.Type.PERMISSION)
       .setPermission("survival.randomtp")
@@ -37,9 +41,9 @@ public class RandomTpCmd implements CommandListener {
 
 
   @Override
-  public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
+  public void onCommand(Sender sender, PluginCommand cmd, Arguments<Argument> args) {
     sender.assertElseExit(sender.isPlayer(true));
-    sender.hasPermissionElseExit(this.permCode);
+    sender.hasPermissionElseExit(this.perm);
 
     User user = sender.getUser();
 
@@ -67,7 +71,12 @@ public class RandomTpCmd implements CommandListener {
   }
 
   @Override
-  public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd, Arguments<Argument> args) {
-    return null;
+  public Completion getTabCompletion() {
+    return new Completion(this.perm);
+  }
+
+  @Override
+  public String getPermission() {
+    return this.perm.getPermission();
   }
 }

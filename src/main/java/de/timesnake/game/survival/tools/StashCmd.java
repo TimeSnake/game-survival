@@ -4,29 +4,28 @@
 
 package de.timesnake.game.survival.tools;
 
-import de.timesnake.basic.bukkit.util.Server;
-import de.timesnake.basic.bukkit.util.chat.Argument;
-import de.timesnake.basic.bukkit.util.chat.CommandListener;
-import de.timesnake.basic.bukkit.util.chat.Sender;
+import de.timesnake.basic.bukkit.util.chat.cmd.Argument;
+import de.timesnake.basic.bukkit.util.chat.cmd.CommandListener;
+import de.timesnake.basic.bukkit.util.chat.cmd.Completion;
+import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.server.SurvivalServer;
 import de.timesnake.library.chat.ExTextColor;
+import de.timesnake.library.commands.PluginCommand;
+import de.timesnake.library.commands.simple.Arguments;
 import de.timesnake.library.extension.util.chat.Chat;
 import de.timesnake.library.extension.util.chat.Code;
-import de.timesnake.library.extension.util.cmd.Arguments;
-import de.timesnake.library.extension.util.cmd.ExCommand;
-import java.util.List;
-import java.util.Optional;
 import net.kyori.adventure.text.Component;
+
+import java.util.Optional;
 
 public class StashCmd implements CommandListener {
 
-  private Code perm;
+  private final Code perm = Plugin.SURVIVAL.createPermssionCode("survival.stash");
 
   @Override
-  public void onCommand(Sender sender, ExCommand<Sender, Argument> cmd,
-      Arguments<Argument> args) {
+  public void onCommand(Sender sender, PluginCommand cmd, Arguments<Argument> args) {
     if (!sender.hasPermission(this.perm)) {
       return;
     }
@@ -93,18 +92,14 @@ public class StashCmd implements CommandListener {
   }
 
   @Override
-  public List<String> getTabCompletion(ExCommand<Sender, Argument> cmd,
-      Arguments<Argument> args) {
-    if (args.length() == 1) {
-      return List.of("addmember", "removemember");
-    } else if (args.length() == 2) {
-      return Server.getCommandManager().getTabCompleter().getPlayerNames();
-    }
-    return List.of();
+  public Completion getTabCompletion() {
+    return new Completion(this.perm)
+        .addArgument(new Completion("addmember", "removemember")
+            .addArgument(Completion.ofPlayerNames()));
   }
 
   @Override
-  public void loadCodes(de.timesnake.library.extension.util.chat.Plugin plugin) {
-    this.perm = plugin.createPermssionCode("survival.stash");
+  public String getPermission() {
+    return this.perm.getPermission();
   }
 }
