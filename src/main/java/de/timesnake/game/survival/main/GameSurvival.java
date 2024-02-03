@@ -7,7 +7,7 @@ package de.timesnake.game.survival.main;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.database.util.Database;
-import de.timesnake.database.util.server.DbTmpGameServer;
+import de.timesnake.database.util.server.DbNonTmpGameServer;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.player.DeathCmd;
 import de.timesnake.game.survival.player.RandomTpCmd;
@@ -56,7 +56,7 @@ public class GameSurvival extends JavaPlugin {
     Server.getCommandManager().addCommand(this, "tprandom", List.of("tprand", "randomtp"),
         new RandomTpCmd(), Plugin.SURVIVAL);
 
-    ((DbTmpGameServer) Database.getServers().getServer(ServerType.GAME, Bukkit.getPort())).setTask("survival");
+    ((DbNonTmpGameServer) Database.getServers().getServer(ServerType.GAME, Bukkit.getPort())).setTask("survival");
 
     SurvivalServerManager.getInstance().onSurvivalEnable();
   }
