@@ -12,9 +12,10 @@ import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractListener;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.main.GameSurvival;
-import de.timesnake.library.basic.util.Loggers;
 import de.timesnake.library.chat.ExTextColor;
 import net.kyori.adventure.text.Component;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
@@ -32,6 +33,8 @@ import java.util.*;
 
 public class MachineManager implements Listener, UserInventoryInteractListener {
 
+  private final Logger logger = LogManager.getLogger("survival.machine.manager");
+
   private final MachinesFile file = new MachinesFile();
 
   private final HashMap<Machine.Type, HashMap<Block, Machine>> machineByBlockByType = new HashMap<>();
@@ -46,7 +49,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
     Crafter.loadRecipe();
     Stash.loadRecipe();
     ItemMagnet.loadRecipe();
-    Loggers.SURVIVAL.info("Loaded machine recipes");
+    this.logger.info("Loaded machine recipes");
 
     Collection<Integer> ids = this.file.getMachineIds();
     this.usedIds.addAll(ids);
@@ -58,19 +61,19 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
     for (Integer id : ids) {
       Machine machine = this.file.getMachine(id);
       if (machine == null) {
-        Loggers.SURVIVAL.warning("Can not load machine: " + id + " (null)");
+        this.logger.warn("Can not load machine: {} (null)", id);
         continue;
       }
       this.machineByBlockByType.get(machine.getType()).put(machine.getBlock(), machine);
     }
 
-    Loggers.SURVIVAL.info("Loaded machines");
+    this.logger.info("Loaded machines");
   }
 
   public void saveMachinesToFile() {
     this.file.resetMachines();
     this.machineByBlockByType.values().forEach(m -> m.values().forEach(this.file::addMachine));
-    Loggers.SURVIVAL.info("Saved machines to file");
+    this.logger.info("Saved machines to file");
   }
 
   @EventHandler
@@ -107,8 +110,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
     } else if (Stash.ITEM.equals(item)) {
       if (this.machineByBlockByType.get(Machine.Type.STASH).values().stream().map(
           s -> ((Stash) s).getOwner()).toList().contains(user.getUniqueId())) {
-        user.sendPluginMessage(Plugin.SURVIVAL,
-            Component.text("You have already a stash", ExTextColor.WARNING));
+        user.sendPluginTDMessage(Plugin.SURVIVAL, "§sYou have already a stash");
         e.setCancelled(true);
         e.setBuild(false);
         return;
@@ -118,8 +120,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
           new LinkedList<>());
       this.machineByBlockByType.get(Machine.Type.STASH).put(block, stash);
       this.usedIds.add(stash.getId());
-      Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
-          Component.text("Stash placed", ExTextColor.PERSONAL));
+      Server.getUser(e.getPlayer()).sendPluginTDMessage(Plugin.SURVIVAL, "§sStash placed");
     }
   }
 
@@ -130,8 +131,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
     Sender sender = user.asSender(Plugin.SURVIVAL);
 
     if (this.machineByBlockByType.get(Machine.Type.HARVESTER).containsKey(block)) {
-      Harvester harv = (Harvester) this.machineByBlockByType.get(Machine.Type.HARVESTER)
-          .remove(block);
+      Harvester harv = (Harvester) this.machineByBlockByType.get(Machine.Type.HARVESTER).remove(block);
       this.file.removeMachine(harv);
       this.usedIds.remove(harv.getId());
       e.setDropItems(false);
@@ -147,20 +147,16 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
           this.usedIds.remove(stash.getId());
           e.setDropItems(false);
           Server.dropItem(block.getLocation(), Stash.ITEM);
-          sender.sendPluginMessage(
-              Component.text("Stash destroyed", ExTextColor.PERSONAL));
+          sender.sendPluginTDMessage("§sStash destroyed");
         } else {
           e.setDropItems(false);
           e.setCancelled(true);
-          sender.sendPluginMessage(
-              Component.text("This is not your stash", ExTextColor.WARNING));
+          sender.sendPluginTDMessage("§wThis is not your stash");
         }
       } else {
         e.setDropItems(false);
         e.setCancelled(true);
-        sender.sendPluginMessage(
-            Component.text("Stash must be empty before it can be destroyed",
-                ExTextColor.WARNING));
+        sender.sendPluginTDMessage("§wStash must be empty before it can be destroyed");
       }
     }
   }

@@ -7,10 +7,12 @@ package de.timesnake.game.survival.tools;
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserBlockPlaceEvent;
-import de.timesnake.basic.bukkit.util.user.inventory.*;
+import de.timesnake.basic.bukkit.util.user.inventory.ExInventory;
+import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickEvent;
+import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryClickListener;
 import de.timesnake.basic.bukkit.util.world.ExBlock;
 import de.timesnake.game.survival.main.GameSurvival;
-import de.timesnake.library.basic.util.Loggers;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -199,15 +201,10 @@ public class Stash extends Machine implements Listener {
       if (stashItem != null && !stashItem.isEmpty()) {
         stashItem.add(item);
       } else {
-        try {
-          stashItem = new StashItem(item);
-          this.stashItemsOrdered.add(stashItem);
-          this.stashItemByDisplayItem.put(stashItem.getDisplayItem(), stashItem);
-          this.stashItemByItemHash.put(convertItemToKeyItem(stashItem.getItem()), stashItem);
-        } catch (InvalidItemTypeException e) {
-          Loggers.SURVIVAL.warning("Unable to load item '" + item.getType().getKey().getKey() + "'");
-        }
-
+        stashItem = new StashItem(item);
+        this.stashItemsOrdered.add(stashItem);
+        this.stashItemByDisplayItem.put(stashItem.getDisplayItem(), stashItem);
+        this.stashItemByItemHash.put(convertItemToKeyItem(stashItem.getItem()), stashItem);
       }
     }
     return true;
