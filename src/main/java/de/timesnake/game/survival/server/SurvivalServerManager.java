@@ -6,8 +6,9 @@ package de.timesnake.game.survival.server;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
-import de.timesnake.game.survival.tools.MachineManager;
 import de.timesnake.game.survival.player.SurvivalUser;
+import de.timesnake.game.survival.tools.MachineManager;
+import de.timesnake.game.survival.tools.SpeedMinecarts;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ public class SurvivalServerManager extends ServerManager implements Listener {
   }
 
   private MachineManager machineManager;
+  private SpeedMinecarts speedMinecarts;
 
   private Location survivalSpawn;
 
@@ -27,13 +29,12 @@ public class SurvivalServerManager extends ServerManager implements Listener {
     this.machineManager = new MachineManager();
     survivalSpawn = Bukkit.getWorld("world").getSpawnLocation();
 
-    Server.setPvP(false);
+    this.speedMinecarts = new SpeedMinecarts();
 
-    //Server.registerListener(privateBlockManger, GameSurvival.getPlugin());
+    Server.setPvP(false);
   }
 
   public void onSurvivalDisable() {
-    //privateBlockManger.savePrivateBlocksToFile();
     machineManager.saveMachinesToFile();
   }
 

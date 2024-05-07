@@ -60,13 +60,10 @@ public class SpawnProtection implements Listener {
 
   public static boolean isSpawnArea(Location location) {
     Location spawn = location.getWorld().getSpawnLocation();
-    if (location.getX() <= spawn.getBlockX() + RADIUS
+    return location.getX() <= spawn.getBlockX() + RADIUS
         && location.getZ() <= spawn.getBlockZ() + RADIUS
         && location.getX() >= spawn.getBlockX() - RADIUS
-        && location.getZ() >= spawn.getBlockZ() - RADIUS) {
-      return true;
-    }
-    return false;
+           && location.getZ() >= spawn.getBlockZ() - RADIUS;
   }
 
 }
