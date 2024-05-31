@@ -24,7 +24,7 @@ public enum StatisticReward implements Reward {
   PILOT("Pilot", Statistic.FLY_ONE_CM, 100000, new ExItemStack(Material.ELYTRA)),
   BASE_JUMPING("Base-Jumping", Statistic.FALL_ONE_CM, 10000,
       new ExItemStack(Material.ENCHANTED_BOOK).addEnchantments(
-          new Tuple<>(Enchantment.PROTECTION_FALL, 5))),
+          new Tuple<>(Enchantment.FEATHER_FALLING, 5))),
   FARMER("Farmer", Statistic.ANIMALS_BRED, 100, new ExItemStack(Material.SADDLE),
       new ExItemStack(Material.WOODEN_HOE).unbreakable()),
   DOORBELL_PRANK("Doorbell-Prank", Statistic.BELL_RING, 11,
