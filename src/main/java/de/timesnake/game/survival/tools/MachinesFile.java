@@ -56,8 +56,7 @@ public class MachinesFile extends ExFile {
       }
     } else if (type.equals(Machine.Type.STASH)) {
       StashFile stashFile = new StashFile(id);
-      Stash stash = new Stash(id, block, stashFile.getStashOwnerId(),
-          stashFile.getStashMembers());
+      Stash stash = new Stash(id, block, stashFile.getStashOwnerId(), stashFile.getStashMembers());
       stashFile.getStashItems().forEach(stash::addItem);
       stash.updateInventories();
       return stash;
