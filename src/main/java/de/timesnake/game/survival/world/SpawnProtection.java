@@ -5,7 +5,6 @@
 package de.timesnake.game.survival.world;
 
 import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,7 +12,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class SpawnProtection implements Listener {
 
@@ -48,15 +46,15 @@ public class SpawnProtection implements Listener {
   }
 
 
-  @EventHandler
-  public void onEntityExplode(EntityExplodeEvent e) {
-    if (e.getEntityType().equals(EntityType.CREEPER) || e.getEntityType().equals(EntityType.WITHER)
-        || e.getEntityType().equals(EntityType.GHAST)) {
-      e.blockList().clear();
-    } else {
-      e.setCancelled(true);
-    }
-  }
+  //@EventHandler
+  //public void onEntityExplode(EntityExplodeEvent e) {
+  //  if (e.getEntityType().equals(EntityType.CREEPER) || e.getEntityType().equals(EntityType.WITHER)
+  //      || e.getEntityType().equals(EntityType.GHAST)) {
+  //    e.blockList().clear();
+  //  } else {
+  //    e.setCancelled(true);
+  //  }
+  //}
 
   public static boolean isSpawnArea(Location location) {
     Location spawn = location.getWorld().getSpawnLocation();
