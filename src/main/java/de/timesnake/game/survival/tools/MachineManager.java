@@ -12,6 +12,8 @@ import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractListener;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.main.GameSurvival;
+import de.timesnake.game.survival.messi_chest.MessiChest;
+import de.timesnake.game.survival.server.SurvivalServer;
 import de.timesnake.library.chat.ExTextColor;
 import net.kyori.adventure.text.Component;
 import org.apache.logging.log4j.LogManager;
@@ -24,12 +26,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 public class MachineManager implements Listener, UserInventoryInteractListener {
 
@@ -47,7 +51,6 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
 
     Harvester.loadRecipe();
     Crafter.loadRecipe();
-    Stash.loadRecipe();
     ItemMagnet.loadRecipe();
     this.logger.info("Loaded machine recipes");
 
@@ -64,6 +67,16 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
         this.logger.warn("Can not load machine: {} (null)", id);
         continue;
       }
+      if (machine instanceof Stash stash) {
+        MessiChest chest = SurvivalServer.getMessiChestManager().createMessiChest(stash.getOwner(), stash.getBlock());
+        stash.getMembers().forEach(chest::addMember);
+        stash.getItems().forEach(item -> chest.addItem(null, item.getItem()));
+        chest.updateInventories();
+        this.file.removeMachine(stash);
+        this.logger.info("Transformed stash {} to messi chest {}", stash.getId(), chest.getId());
+        continue;
+      }
+
       this.machineByBlockByType.get(machine.getType()).put(machine.getBlock(), machine);
     }
 
@@ -99,7 +112,6 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
   public void onBlockPlace(BlockPlaceEvent e) {
     Block block = e.getBlock();
     ExItemStack item = ExItemStack.getItem(e.getItemInHand(), true);
-    User user = Server.getUser(e.getPlayer());
 
     if (Harvester.ITEM.equals(item)) {
       Harvester harv = new Harvester(this.getNewId(), block);
@@ -107,20 +119,6 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
       this.usedIds.add(harv.getId());
       Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
           Component.text("Harvester placed", ExTextColor.PERSONAL));
-    } else if (Stash.ITEM.equals(item)) {
-      if (this.machineByBlockByType.get(Machine.Type.STASH).values().stream().map(
-          s -> ((Stash) s).getOwner()).toList().contains(user.getUniqueId())) {
-        user.sendPluginTDMessage(Plugin.SURVIVAL, "§sYou have already a stash");
-        e.setCancelled(true);
-        e.setBuild(false);
-        return;
-      }
-
-      Stash stash = new Stash(this.getNewId(), block, e.getPlayer().getUniqueId(),
-          new LinkedList<>());
-      this.machineByBlockByType.get(Machine.Type.STASH).put(block, stash);
-      this.usedIds.add(stash.getId());
-      Server.getUser(e.getPlayer()).sendPluginTDMessage(Plugin.SURVIVAL, "§sStash placed");
     }
   }
 
@@ -137,27 +135,6 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
       e.setDropItems(false);
       Server.dropItem(block.getLocation(), Harvester.ITEM);
       sender.sendPluginMessage(Component.text("Harvester destroyed", ExTextColor.PERSONAL));
-    } else if (this.machineByBlockByType.get(Machine.Type.STASH).containsKey(block)) {
-      Stash stash = ((Stash) this.machineByBlockByType.get(Machine.Type.STASH).get(block));
-
-      if (stash.getItems().isEmpty()) {
-        if (stash.getOwner().equals(user.getUniqueId())) {
-          this.machineByBlockByType.get(Machine.Type.STASH).remove(block);
-          this.file.removeMachine(stash);
-          this.usedIds.remove(stash.getId());
-          e.setDropItems(false);
-          Server.dropItem(block.getLocation(), Stash.ITEM);
-          sender.sendPluginTDMessage("§sStash destroyed");
-        } else {
-          e.setDropItems(false);
-          e.setCancelled(true);
-          sender.sendPluginTDMessage("§wThis is not your stash");
-        }
-      } else {
-        e.setDropItems(false);
-        e.setCancelled(true);
-        sender.sendPluginTDMessage("§wStash must be empty before it can be destroyed");
-      }
     }
   }
 
@@ -175,29 +152,6 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
     if (e.getClickedItem().equals(Crafter.ITEM)) {
       e.getUser().getPlayer().openWorkbench(null, true);
       e.setCancelled(true);
-    }
-  }
-
-  @EventHandler
-  public void onInteract(PlayerInteractEvent e) {
-    Block block = e.getClickedBlock();
-
-    if (block == null) {
-      return;
-    }
-
-    Stash stash = (Stash) this.machineByBlockByType.get(Machine.Type.STASH).get(block);
-    User user = Server.getUser(e.getPlayer());
-
-    if (stash != null && !e.getPlayer().isSneaking()) {
-      if (stash.getOwner().equals(user.getUniqueId()) || stash.getMembers()
-          .contains(user.getUniqueId())) {
-        stash.openInventoryFor(user);
-        e.setCancelled(true);
-      } else {
-        user.sendPluginMessage(Plugin.SURVIVAL,
-            Component.text("Access denied", ExTextColor.WARNING));
-      }
     }
   }
 

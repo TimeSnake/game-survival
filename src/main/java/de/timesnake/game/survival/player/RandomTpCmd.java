@@ -11,10 +11,10 @@ import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.server.SurvivalServer;
-import de.timesnake.library.commands.PluginCommand;
-import de.timesnake.library.commands.simple.Arguments;
 import de.timesnake.library.chat.Chat;
 import de.timesnake.library.chat.Code;
+import de.timesnake.library.commands.PluginCommand;
+import de.timesnake.library.commands.simple.Arguments;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -27,17 +27,13 @@ import java.util.UUID;
 
 public class RandomTpCmd implements CommandListener {
 
-  private static final int MAX_COORD = 10000;
+  private static final int MAX_COORD = 20000;
   private static final int COOLDOWN_MIN = 30;
 
   private final Map<UUID, LocalDateTime> cooldownUsers = new HashMap<>();
   private final Random random = new Random();
 
-  private final Code perm = new Code.Builder()
-      .setPlugin(Plugin.SURVIVAL)
-      .setType(Code.Type.PERMISSION)
-      .setPermission("survival.randomtp")
-      .build();
+  private final Code perm = Plugin.SURVIVAL.createPermssionCode("survival.randomtp");
 
 
   @Override
