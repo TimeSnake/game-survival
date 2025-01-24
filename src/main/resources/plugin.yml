@@ -1,5 +1,5 @@
 main: de.timesnake.game.survival.main.GameSurvival
-version: 1.2.2
+version: ${version}
 name: game-survival
 author: timesnake
 depend: [ basic-bukkit ]
@@ -12,7 +12,7 @@ commands:
   survivalspawn:
   spawnsurvival:
   sspawn:
-  stash:
+  messi:
   tprandom:
   tprand:
   randomtp:
