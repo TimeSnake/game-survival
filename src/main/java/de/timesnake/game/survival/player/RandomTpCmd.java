@@ -9,7 +9,6 @@ import de.timesnake.basic.bukkit.util.chat.cmd.CommandListener;
 import de.timesnake.basic.bukkit.util.chat.cmd.Completion;
 import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.server.SurvivalServer;
 import de.timesnake.library.chat.Chat;
 import de.timesnake.library.chat.Code;
@@ -33,7 +32,7 @@ public class RandomTpCmd implements CommandListener {
   private final Map<UUID, LocalDateTime> cooldownUsers = new HashMap<>();
   private final Random random = new Random();
 
-  private final Code perm = Plugin.SURVIVAL.createPermssionCode("survival.randomtp");
+  private final Code perm = SurvivalServer.PLUGIN.createPermssionCode("survival.randomtp");
 
 
   @Override

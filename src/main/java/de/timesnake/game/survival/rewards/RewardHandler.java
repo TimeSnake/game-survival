@@ -6,7 +6,7 @@ package de.timesnake.game.survival.rewards;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.game.survival.chat.Plugin;
+import de.timesnake.game.survival.server.SurvivalServer;
 import de.timesnake.library.chat.ExTextColor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Statistic;
@@ -28,7 +28,7 @@ public class RewardHandler implements Listener {
       }
 
       User user = Server.getUser(e.getPlayer());
-      Server.broadcastMessage(Plugin.REWARDS, user.getChatNameComponent()
+      Server.broadcastMessage(SurvivalServer.PLUGIN, user.getChatNameComponent()
           .append(Component.text(" gained the reward: ", ExTextColor.PUBLIC))
           .append(Component.text(reward.getName(), ExTextColor.VALUE)));
       user.addItem(reward.getPrizes());

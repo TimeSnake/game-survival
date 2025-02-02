@@ -10,7 +10,6 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.UserInventoryInteractListener;
-import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.main.GameSurvival;
 import de.timesnake.game.survival.messi_chest.MessiChest;
 import de.timesnake.game.survival.server.SurvivalServer;
@@ -117,7 +116,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
       Harvester harv = new Harvester(this.getNewId(), block);
       this.machineByBlockByType.get(Machine.Type.HARVESTER).put(block, harv);
       this.usedIds.add(harv.getId());
-      Server.getUser(e.getPlayer()).sendPluginMessage(Plugin.SURVIVAL,
+      Server.getUser(e.getPlayer()).sendPluginMessage(SurvivalServer.PLUGIN,
           Component.text("Harvester placed", ExTextColor.PERSONAL));
     }
   }
@@ -126,7 +125,7 @@ public class MachineManager implements Listener, UserInventoryInteractListener {
   public void onBlockBreak(BlockBreakEvent e) {
     Block block = e.getBlock();
     User user = Server.getUser(e.getPlayer());
-    Sender sender = user.asSender(Plugin.SURVIVAL);
+    Sender sender = user.asSender(SurvivalServer.PLUGIN);
 
     if (this.machineByBlockByType.get(Machine.Type.HARVESTER).containsKey(block)) {
       Harvester harv = (Harvester) this.machineByBlockByType.get(Machine.Type.HARVESTER).remove(block);

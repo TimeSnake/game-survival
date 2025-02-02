@@ -21,7 +21,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
@@ -215,7 +214,7 @@ public class Stash extends Machine implements Listener {
     return Type.STASH;
   }
 
-  @EventHandler
+  //@EventHandler
   public void onInventoryClick(InventoryClickEvent e) {
     if (!this.pageByNumber.containsValue(e.getView().getTopInventory().getHolder())) {
       return;
@@ -238,7 +237,7 @@ public class Stash extends Machine implements Listener {
     }
   }
 
-  @EventHandler
+  //@EventHandler
   public void onInventoryDrag(InventoryDragEvent e) {
     if (!this.pageByNumber.containsValue(e.getInventory().getHolder())) {
       return;
@@ -250,7 +249,7 @@ public class Stash extends Machine implements Listener {
     }
   }
 
-  @EventHandler
+  //@EventHandler
   public void onBlockPlace(UserBlockPlaceEvent e) {
     Block block = e.getBlockPlaced();
 
@@ -268,7 +267,7 @@ public class Stash extends Machine implements Listener {
     blockInv.clear();
   }
 
-  @EventHandler
+  //@EventHandler
   public void onInventoryMove(InventoryMoveItemEvent e) {
     Inventory destination = e.getDestination();
 

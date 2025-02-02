@@ -8,12 +8,11 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.database.util.Database;
 import de.timesnake.database.util.server.DbNonTmpGameServer;
-import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.messi_chest.MessiChestCmd;
-import de.timesnake.game.survival.player.DeathCmd;
 import de.timesnake.game.survival.player.RandomTpCmd;
 import de.timesnake.game.survival.player.SurvivalSpawnCmd;
 import de.timesnake.game.survival.rewards.RewardHandler;
+import de.timesnake.game.survival.server.SurvivalServer;
 import de.timesnake.game.survival.server.SurvivalServerManager;
 import de.timesnake.game.survival.world.SpawnProtection;
 import de.timesnake.library.basic.util.ServerType;
@@ -43,18 +42,16 @@ public class GameSurvival extends JavaPlugin {
 
     PluginManager pm = Bukkit.getPluginManager();
     pm.registerEvents(new SpawnProtection(), this);
-    pm.registerEvents(new DeathCmd(), this);
     pm.registerEvents(SurvivalServerManager.getInstance(), this);
     pm.registerEvents(new RewardHandler(), this);
 
-    Server.getCommandManager().addCommand(this, "back", new DeathCmd(), Plugin.SURVIVAL);
     Server.getCommandManager().addCommand(this, "survivalspawn", List.of("spawnsurvival", "sspawn"),
-        new SurvivalSpawnCmd(), Plugin.SURVIVAL);
+        new SurvivalSpawnCmd(), SurvivalServer.PLUGIN);
 
-    Server.getCommandManager().addCommand(this, "messi", new MessiChestCmd(), Plugin.SURVIVAL);
+    Server.getCommandManager().addCommand(this, "messi", new MessiChestCmd(), SurvivalServer.PLUGIN);
 
     Server.getCommandManager().addCommand(this, "tprandom", List.of("tprand", "randomtp"),
-        new RandomTpCmd(), Plugin.SURVIVAL);
+        new RandomTpCmd(), SurvivalServer.PLUGIN);
 
     ((DbNonTmpGameServer) Database.getServers().getServer(ServerType.GAME, Bukkit.getPort())).setTask("survival");
 
