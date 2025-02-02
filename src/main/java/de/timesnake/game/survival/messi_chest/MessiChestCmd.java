@@ -6,7 +6,6 @@ import de.timesnake.basic.bukkit.util.chat.cmd.CommandListener;
 import de.timesnake.basic.bukkit.util.chat.cmd.Completion;
 import de.timesnake.basic.bukkit.util.chat.cmd.Sender;
 import de.timesnake.basic.bukkit.util.user.User;
-import de.timesnake.game.survival.chat.Plugin;
 import de.timesnake.game.survival.server.SurvivalServer;
 import de.timesnake.library.chat.Code;
 import de.timesnake.library.commands.PluginCommand;
@@ -16,7 +15,7 @@ import java.util.List;
 
 public class MessiChestCmd implements CommandListener {
 
-  private final Code perm = Plugin.SURVIVAL.createPermssionCode("survival.messi_chest");
+  private final Code perm = SurvivalServer.PLUGIN.createPermssionCode("survival.messi_chest");
 
   @Override
   public void onCommand(Sender sender, PluginCommand cmd, Arguments<Argument> args) {

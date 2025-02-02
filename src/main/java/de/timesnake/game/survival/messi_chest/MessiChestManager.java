@@ -6,22 +6,23 @@ import de.timesnake.basic.bukkit.util.user.User;
 import de.timesnake.basic.bukkit.util.user.event.UserBlockBreakEvent;
 import de.timesnake.basic.bukkit.util.user.event.UserBlockPlaceEvent;
 import de.timesnake.basic.bukkit.util.user.inventory.ExItemStack;
-import de.timesnake.game.survival.chat.Plugin;
+import de.timesnake.basic.bukkit.util.world.ExBlock;
 import de.timesnake.game.survival.main.GameSurvival;
+import de.timesnake.game.survival.server.SurvivalServer;
 import de.timesnake.library.basic.util.GsonFile;
 import de.timesnake.library.basic.util.MultiKeyMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -208,7 +209,7 @@ public class MessiChestManager implements Listener {
     if (!user.isSneaking() && e.getAction().isRightClick()) {
       e.setCancelled(true);
       if (!chest.openInventoryFor(user.getPlayer())) {
-        user.sendPluginTDMessage(Plugin.SURVIVAL, "§wAccess denied");
+        user.sendPluginTDMessage(SurvivalServer.PLUGIN, "§wAccess denied");
       }
     }
   }
@@ -221,7 +222,28 @@ public class MessiChestManager implements Listener {
 
     if (MessiChest.ITEM.equals(item)) {
       MessiChest chest = this.createMessiChest(user.getUniqueId(), block);
-      user.sendPluginTDMessage(Plugin.SURVIVAL, "§sMessi chest created (id: §v" + chest.getId() + ")");
+      user.sendPluginTDMessage(SurvivalServer.PLUGIN, "§sMessi chest created (id: §v" + chest.getId() + ")");
+      return;
+    }
+
+    Block blockPlaced = e.getBlockPlaced();
+
+    if (!(blockPlaced.getState() instanceof Container container)) {
+      return;
+    }
+
+    Optional<MessiChest> chestOpt = new ExBlock(blockPlaced).getBesideBlocks().stream()
+        .map(this.chests::get2)
+        .filter(Objects::nonNull)
+        .findFirst();
+
+    if (chestOpt.isPresent()) {
+      MessiChest chest = chestOpt.get();
+      Inventory blockInv = container.getInventory();
+      chest.addItem(user.getPlayer(), blockInv.getContents());
+      chest.updateInventories();
+      blockInv.clear();
+      blockPlaced.getWorld().playNote(blockPlaced.getLocation(), Instrument.STICKS, Note.natural(1, Note.Tone.A));
     }
   }
 
@@ -236,16 +258,16 @@ public class MessiChestManager implements Listener {
         if (chest.getOwner().equals(user.getUniqueId())) {
           this.removeMessiChest(user.getPlayer(), chest);
           e.setDropItems(false);
-          user.sendPluginTDMessage(Plugin.SURVIVAL, "§sDestroyed messi chest (id: §v" + chest.getId() + ")");
+          user.sendPluginTDMessage(SurvivalServer.PLUGIN, "§sDestroyed messi chest (id: §v" + chest.getId() + ")");
         } else {
           e.setDropItems(false);
           e.setCancelled(true);
-          user.sendPluginTDMessage(Plugin.SURVIVAL, "§wThis is not your messi chest");
+          user.sendPluginTDMessage(SurvivalServer.PLUGIN, "§wThis is not your messi chest");
         }
       } else {
         e.setDropItems(false);
         e.setCancelled(true);
-        user.sendPluginTDMessage(Plugin.SURVIVAL, "§wStash must be empty");
+        user.sendPluginTDMessage(SurvivalServer.PLUGIN, "§wStash must be empty");
       }
     }
   }
