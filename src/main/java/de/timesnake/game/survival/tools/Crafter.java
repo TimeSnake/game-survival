@@ -12,10 +12,11 @@ import org.bukkit.inventory.ShapedRecipe;
 
 public class Crafter {
 
-  public static final String NAME = "§rPortable Crafting Table";
-  public static final ExItemStack ITEM = ExItemStack.getHashedIdItem(Material.CRAFTING_TABLE,
-          "port_craft_table")
-      .setDisplayName(NAME).setLore("§7Click to open or place");
+  public static final String NAME = "§rshuPortable Crafting Table";
+  public static final ExItemStack ITEM = ExItemStack.getHashedIdItem(Material.CRAFTING_TABLE, "port_craft_table")
+      .setDisplayName(NAME)
+      .setLore("§7Click to open or place")
+      .onInteract(e -> e.getUser().openWorkbench(null, true), true);
 
   public static void loadRecipe() {
     ShapedRecipe craftRecipe = new ShapedRecipe(NamespacedKey.minecraft("crafting"), Crafter.ITEM);

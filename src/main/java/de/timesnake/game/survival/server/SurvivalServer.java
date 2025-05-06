@@ -6,17 +6,12 @@ package de.timesnake.game.survival.server;
 
 import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.game.survival.messi_chest.MessiChestManager;
-import de.timesnake.game.survival.tools.MachineManager;
 import de.timesnake.library.chat.Plugin;
 import org.bukkit.Location;
 
 public class SurvivalServer extends Server {
 
   public static final Plugin PLUGIN = new Plugin("Survival", "GSS");
-
-  public static MachineManager getMachineManager() {
-    return server.getMachineManager();
-  }
 
   public static Location getSurvivalSpawn() {
     return server.getSurvivalSpawn();

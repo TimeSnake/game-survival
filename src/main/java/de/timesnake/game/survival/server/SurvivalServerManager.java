@@ -8,7 +8,7 @@ import de.timesnake.basic.bukkit.util.Server;
 import de.timesnake.basic.bukkit.util.ServerManager;
 import de.timesnake.game.survival.messi_chest.MessiChestManager;
 import de.timesnake.game.survival.player.SurvivalUser;
-import de.timesnake.game.survival.tools.MachineManager;
+import de.timesnake.game.survival.tools.Crafter;
 import de.timesnake.game.survival.tools.SpeedMinecarts;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,7 +21,6 @@ public class SurvivalServerManager extends ServerManager implements Listener {
     return (SurvivalServerManager) ServerManager.getInstance();
   }
 
-  private MachineManager machineManager;
   private SpeedMinecarts speedMinecarts;
   private MessiChestManager messiChestManager;
 
@@ -29,7 +28,7 @@ public class SurvivalServerManager extends ServerManager implements Listener {
 
   public void onSurvivalEnable() {
     this.messiChestManager = new MessiChestManager();
-    this.machineManager = new MachineManager();
+    Crafter.loadRecipe();
     survivalSpawn = Bukkit.getWorld("world").getSpawnLocation();
 
     this.speedMinecarts = new SpeedMinecarts();
@@ -39,17 +38,12 @@ public class SurvivalServerManager extends ServerManager implements Listener {
   }
 
   public void onSurvivalDisable() {
-    this.machineManager.saveMachinesToFile();
     this.messiChestManager.save();
   }
 
   @Override
   public SurvivalUser loadUser(Player player) {
     return new SurvivalUser(player);
-  }
-
-  public MachineManager getMachineManager() {
-    return machineManager;
   }
 
   public Location getSurvivalSpawn() {
@@ -59,4 +53,5 @@ public class SurvivalServerManager extends ServerManager implements Listener {
   public MessiChestManager getMessiChestManager() {
     return messiChestManager;
   }
+
 }

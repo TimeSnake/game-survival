@@ -215,7 +215,11 @@ public class MessiChestModdedView implements InventoryHolder, PacketPlayOutListe
     if (clickType.equals(net.minecraft.world.inventory.ClickType.QUICK_MOVE)) {
       if (slot < 54) { // stash to player
         Map.Entry<Integer, ItemStack> target = itemBySlot.entrySet().stream()
-            .filter(e -> e.getKey() != slot).min(Comparator.comparingInt(Map.Entry::getKey)).get();
+            .filter(e -> e.getKey() != slot).min(Comparator.comparingInt(Map.Entry::getKey)).orElse(null);
+
+        if (target == null) {
+          return false;
+        }
 
         ExItemStack clickedItem = new ExItemStack(target.getValue());
         if (key.equals(PacketKey.LEFT)) {
